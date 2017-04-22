@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width,initial-scale=1" name="viewport">
+  <title>SNH48直播日程</title>
+  <style>
+    body { margin: 0; font-family: "Times New Roman", Times, "Songti SC", SimSun, serif; font-size: 16px; }
+    h1 { text-align: center; font-size: 2em; margin: 30px 0; }
+    .grid { max-width: 960px; margin: auto; display: grid; justify-content: center; grid-template-columns: repeat(auto-fill, 300px); grid-gap: 30px; margin-bottom: 30px; }
+    .thumbnail { display: block; width: 300px; height: 160px; background: #ddd; }
+    .title, .subtitle, .datetime { display: block; }
+    .title, .subtitle { margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .subtitle { font-size: 85%; }
+    .leftshift { margin-left: -0.5em; }
+    .datetime { font-size: 80%; color: #999; margin-top: 5px; }
+  </style>
+</head>
+<body>
+  <h1>SNH48直播日程</h1>
+  <div class="grid">
+    {%- for entry in entries %}
+    <div class="item">
+      <img class="thumbnail" src="{{ entry.thumbnail_url }}" alt="{{ entry.title }}">
+      <span class="title{% if entry.title.startswith('《') %} leftshift{% endif %}">{{ entry.title }}</span>
+      <span class="subtitle{% if entry.subtitle.startswith('《') %} leftshift{% endif %}">{{ entry.subtitle }}</span>
+      <time class="datetime" data-timestamp="{{ entry.timestamp }}">{{ entry.timestamp|strftime }}</time>
+    </div>
+    {%- endfor %}
+  </div>
+</body>
+</html>
+
+{#- Local Variables: -#}
+{#- mode: jinja2 -#}
+{#- End: -#}
