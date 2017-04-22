@@ -12,7 +12,7 @@ import attrdict
 import flask
 import setproctitle
 
-from common import DATAFILE, safe_open
+from common import DATAFILE, install_rotating_file_handler, safe_open
 from update import periodic_updater, update
 
 app = flask.Flask(__name__)
@@ -36,6 +36,7 @@ def favicon():
     )
 
 def init():
+    install_rotating_file_handler(app.logger, 'server.log')
     update()
     updater_process = multiprocessing.Process(target=periodic_updater)
     updater_process.start()

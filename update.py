@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import json
+import logging
 import os
 import time
 
@@ -8,19 +9,20 @@ import attrdict
 import requests
 import setproctitle
 
-from common import DATAFILE, safe_open
+from common import DATAFILE, install_rotating_file_handler, safe_open
 
 UPDATE_INTERVAL = 1800
 
+logger = logging.getLogger('snh48schedule_updater')
+install_rotating_file_handler(logger, 'updater.log')
+
 def update():
-    # TODO: set up logging
-    # logger.info('updating...')
+    logger.info('updating...')
     url = 'https://plive.48.cn/livesystem/api/live/v1/openLivePage'
     payload = {'groupId': 10, 'type': 0}
     resp = requests.post(url, json=payload)
     if resp.status_code != 200:
-        # TODO: set up logging
-        # logger.warning('failed to fetch schedule data: HTTP %d %s', resp.status_code, resp.reason)
+        logger.warning('failed to fetch schedule data: HTTP %d %s', resp.status_code, resp.reason)
         return
     data = attrdict.AttrDict(resp.json())
     entries = []
@@ -39,6 +41,9 @@ def periodic_updater():
         setproctitle.setproctitle('snh48schedule_updater')
         while True:
             time.sleep(UPDATE_INTERVAL - time.time() % UPDATE_INTERVAL)
-            update()
+            try:
+                update()
+            except Exception as e:
+                logger.error('update failed: %s: %s', type(e).__name__, e)
     except KeyboardInterrupt:
         pass
