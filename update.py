@@ -6,12 +6,18 @@ import os
 import time
 
 import attrdict
+import daemonize
 import requests
 import setproctitle
 
 from common import DATAFILE, install_rotating_file_handler, safe_open
 
 UPDATE_INTERVAL = 1800
+
+XDG_RUNTIME_DIR = os.getenv('XDG_RUNTIME_DIR')
+RUNTIME_DIR = os.path.join(XDG_RUNTIME_DIR if XDG_RUNTIME_DIR else '/tmp', 'snh48schedule')
+os.makedirs(RUNTIME_DIR, exist_ok=True)
+PIDFILE = os.path.join(RUNTIME_DIR, 'updater.pid')
 
 logger = logging.getLogger('snh48schedule_updater')
 install_rotating_file_handler(logger, 'updater.log')
@@ -40,10 +46,23 @@ def periodic_updater():
     try:
         setproctitle.setproctitle('snh48schedule_updater')
         while True:
-            time.sleep(UPDATE_INTERVAL - time.time() % UPDATE_INTERVAL)
             try:
                 update()
             except Exception as e:
                 logger.error('update failed: %s: %s', type(e).__name__, e)
+            time.sleep(UPDATE_INTERVAL - time.time() % UPDATE_INTERVAL)
     except KeyboardInterrupt:
         pass
+
+def start_daemon():
+    daemon = daemonize.Daemonize(
+        app='snh48schedule_updater',
+        pid=PIDFILE,
+        action=periodic_updater,
+        keep_fds=[handler.stream.fileno() for handler in logger.handlers],
+        logger=logger,
+    )
+    daemon.start()
+
+if __name__ == '__main__':
+    start_daemon()

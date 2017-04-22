@@ -13,7 +13,6 @@ import flask
 import setproctitle
 
 from common import DATAFILE, install_rotating_file_handler, safe_open
-from update import periodic_updater, update
 
 app = flask.Flask(__name__)
 
@@ -24,7 +23,7 @@ def strftime(timestamp):
 @app.route('/')
 def index():
     with safe_open(DATAFILE, 'r') as fp:
-        entries = [attrdict.AttrDict(entry) for entry in json.load(fp)]
+        entries = [attrdict.AttrDict(entry) for entry in json.load(fp)] if fp is not None else []
     return flask.render_template('index.html', entries=entries)
 
 @app.route('/favicon.ico')
@@ -41,13 +40,8 @@ def not_found(e):
 
 def init():
     install_rotating_file_handler(app.logger, 'server.log')
-    update()
-    updater_process = multiprocessing.Process(target=periodic_updater)
-    updater_process.start()
-    return updater_process
 
 if __name__ == '__main__':
     setproctitle.setproctitle('snh48schedule')
-    updater_process = init()
-    app.run(host='0.0.0.0', debug=True, use_reloader=False)
-    updater_process.join()
+    init()
+    app.run(debug=True)

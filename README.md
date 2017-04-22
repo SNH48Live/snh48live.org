@@ -13,6 +13,8 @@ An extremely simple and usable website for checking SNH48's live streaming sched
 
 ## Setting up
 
+### Web server process
+
 For development purposes, simply install the requirements and run
 
 ```
@@ -27,6 +29,16 @@ venv/bin/pip install -r requirements.txt
 ```
 
 then set up the site with `snh48schedule.wsgi`. See [Flask's documentation on mod_wsgi](http://flask.pocoo.org/docs/0.12/deploying/mod_wsgi/). Make sure this directory as well as `data/` and `logs/` (if either exists) are writable by web server processes (e.g. `www-data`).
+
+### Background updater process
+
+The background updater `update.py` needs to be run separately.
+
+```
+./update.py
+```
+
+kicks off the daemon. A [systemd.service template](snh48schedule_updater.service.template) is provided.
 
 ## Todos
 

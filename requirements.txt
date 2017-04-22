@@ -1,5 +1,6 @@
 Flask
 arrow
 attrdict
+daemonize
 requests
 setproctitle
