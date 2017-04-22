@@ -12,6 +12,9 @@ DATADIR = os.path.join(HERE, 'data')
 os.makedirs(DATADIR, exist_ok=True)
 DATAFILE = os.path.join(DATADIR, 'data.json')
 
+IMAGEDIR = os.path.join(DATADIR, 'images')
+os.makedirs(IMAGEDIR, exist_ok=True)
+
 LOGDIR = os.path.join(HERE, 'logs')
 os.makedirs(LOGDIR, exist_ok=True)
 
@@ -31,12 +34,12 @@ def install_rotating_file_handler(logger, filename, level=logging.INFO, formatte
         logger.setLevel(level)
 
 # Safe file access with advisory locks.
-# mode is either 'r' for read or 'w' for write.
+# Supported modes: r, w, rb, wb.
 @contextlib.contextmanager
 def safe_open(path, mode):
-    if mode not in ('r', 'w'):
+    if mode not in ('r', 'w', 'rb', 'wb'):
         raise NotImplementedError('%s is not a supported mode' % mode)
-    flags = os.O_RDONLY if mode == 'r' else (os.O_CREAT | os.O_WRONLY)
+    flags = os.O_RDONLY if mode.startswith('r') else (os.O_CREAT | os.O_WRONLY)
     try:
         fd = os.open(path, flags, mode=0o600)
     except OSError:

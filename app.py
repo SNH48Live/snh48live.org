@@ -12,19 +12,28 @@ import attrdict
 import flask
 import setproctitle
 
-from common import DATAFILE, install_rotating_file_handler, safe_open
+from common import DATAFILE, IMAGEDIR, install_rotating_file_handler, safe_open
 
 app = flask.Flask(__name__)
 
 @app.template_filter('strftime')
 def strftime(timestamp):
-    return arrow.get(int(timestamp) / 1000).to('Asia/Shanghai').strftime('%Y-%m-%d %H:%M:%S')
+    return arrow.get(timestamp / 1000).to('Asia/Shanghai').strftime('%Y-%m-%d %H:%M:%S')
 
 @app.route('/')
 def index():
     with safe_open(DATAFILE, 'r') as fp:
         entries = [attrdict.AttrDict(entry) for entry in json.load(fp)] if fp is not None else []
     return flask.render_template('index.html', entries=entries)
+
+# Alternatively, we can configure the underlying webserver to serve the images directory directly
+@app.route('/images/<filename>')
+def image(filename):
+    with safe_open(os.path.join(IMAGEDIR, filename), 'rb') as fp:
+        if fp is None:
+            flask.abort(404)
+        else:
+            return flask.send_from_directory(IMAGEDIR, filename)
 
 @app.route('/favicon.ico')
 def favicon():
