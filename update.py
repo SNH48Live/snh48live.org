@@ -66,33 +66,42 @@ def update():
         logger.error('failed to fetch schedule data: HTTP %d %s', resp.status_code, resp.reason)
         return
     data = attrdict.AttrDict(resp.json())
-    with multiprocessing.pool.Pool() as pool:
-        entries = []
-        for entry in data.content.liveList:
-            title = entry.title.strip()
-            subtitle = entry.subTitle.strip()
-            timestamp = entry.startTime
-            thumbnail_url = 'https://source.48.cn%s' % entry.picPath
-            image_filename = '%s-%s.jpg' % (
-                arrow.get(timestamp / 1000).to('Asia/Shanghai').strftime('%Y%m%d%H%M%S'),
-                md5sum(thumbnail_url),
-            )
-            entries.append({
-                'title': title,
-                'subtitle': subtitle,
-                'timestamp': timestamp,
-                'thumbnail_url': thumbnail_url,
-                'local_filename': image_filename,
-            })
-            image_path = os.path.join(IMAGEDIR, image_filename)
-            if not os.path.isfile(image_path):
-                pool.apply_async(download_with_retry, (thumbnail_url, image_path))
 
-        with safe_open(DATAFILE, 'w') as fp:
-            json.dump(entries, fp)
+    # Parse API response
+    entries = []
+    download_tasks = []
+    for entry in data.content.liveList:
+        title = entry.title.strip()
+        subtitle = entry.subTitle.strip()
+        timestamp = entry.startTime
+        thumbnail_url = 'https://source.48.cn%s' % entry.picPath
+        image_filename = '%s-%s.jpg' % (
+            arrow.get(timestamp / 1000).to('Asia/Shanghai').strftime('%Y%m%d%H%M%S'),
+            md5sum(thumbnail_url),
+        )
+        entries.append({
+            'title': title,
+            'subtitle': subtitle,
+            'timestamp': timestamp,
+            'thumbnail_url': thumbnail_url,
+            'local_filename': image_filename,
+        })
+        image_path = os.path.join(IMAGEDIR, image_filename)
+        if not os.path.isfile(image_path):
+            download_tasks.append((thumbnail_url, image_path))
 
-        pool.close()
-        pool.join()
+    # Write database
+    with safe_open(DATAFILE, 'w') as fp:
+        json.dump(entries, fp)
+
+    # Download images if necessary
+    if download_tasks:
+        worker_count = min(len(download_tasks), max(os.cpu_count() * 2, 4))
+        with multiprocessing.pool.Pool(processes=worker_count, maxtasksperchild=1) as pool:
+            for task in download_tasks:
+                pool.apply_async(download_with_retry, task)
+            pool.close()
+            pool.join()
 
 def periodic_updater():
     try:
