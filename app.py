@@ -35,6 +35,10 @@ def favicon():
         mimetype='image/x-icon',
     )
 
+@app.errorhandler(404)
+def not_found(e):
+    return flask.render_template('404.html'), 404
+
 def init():
     install_rotating_file_handler(app.logger, 'server.log')
     update()
