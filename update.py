@@ -8,7 +8,7 @@ import attrdict
 import requests
 import setproctitle
 
-from common import appname, datafile, safe_open
+from common import DATAFILE, safe_open
 
 UPDATE_INTERVAL = 1800
 
@@ -31,12 +31,12 @@ def update():
             'timestamp': entry.startTime,
             'thumbnail_url': 'https://source.48.cn%s' % entry.picPath,
         })
-    with safe_open(datafile(), 'w') as fp:
+    with safe_open(DATAFILE, 'w') as fp:
         json.dump(entries, fp)
 
 def periodic_updater():
     try:
-        setproctitle.setproctitle('%s_updater' % appname)
+        setproctitle.setproctitle('snh48schedule_updater')
         while True:
             time.sleep(UPDATE_INTERVAL - time.time() % UPDATE_INTERVAL)
             update()

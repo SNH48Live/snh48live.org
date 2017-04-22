@@ -4,13 +4,9 @@ import contextlib
 import fcntl
 import os
 
-appname = 'snh48schedule'
-
-def datadir():
-    return os.getenv('DATADIR', '/tmp/%s' % appname)
-
-def datafile():
-    return os.path.join(datadir(), 'data.json')
+DATADIR = os.path.join(os.path.dirname(__file__), 'data')
+os.makedirs(DATADIR, exist_ok=True)
+DATAFILE = os.path.join(DATADIR, 'data.json')
 
 # Safe file access with advisory locks.
 # mode is either 'r' for read or 'w' for write.

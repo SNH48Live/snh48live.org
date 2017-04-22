@@ -12,7 +12,7 @@ import attrdict
 import flask
 import setproctitle
 
-from common import appname, datafile, safe_open
+from common import DATAFILE, safe_open
 from update import periodic_updater, update
 
 app = flask.Flask(__name__)
@@ -23,7 +23,7 @@ def strftime(timestamp):
 
 @app.route('/')
 def index():
-    with safe_open(datafile(), 'r') as fp:
+    with safe_open(DATAFILE, 'r') as fp:
         entries = [attrdict.AttrDict(entry) for entry in json.load(fp)]
     return flask.render_template('index.html', entries=entries)
 
@@ -36,18 +36,13 @@ def favicon():
     )
 
 def init():
-    datadir = tempfile.mkdtemp(prefix=appname)
-    atexit.register(shutil.rmtree, datadir)
-    os.environ['DATADIR'] = datadir
-
     update()
     updater_process = multiprocessing.Process(target=periodic_updater)
     updater_process.start()
-
     return updater_process
 
 if __name__ == '__main__':
-    setproctitle.setproctitle(appname)
+    setproctitle.setproctitle('snh48schedule')
     updater_process = init()
     app.run(host='0.0.0.0', debug=True, use_reloader=False)
     updater_process.join()

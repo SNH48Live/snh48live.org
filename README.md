@@ -26,7 +26,7 @@ python3 -m venv venv
 venv/bin/pip install -r requirements.txt
 ```
 
-then set up the site with `snh48schedule.wsgi`. See [Flask's documentation on mod_wsgi](http://flask.pocoo.org/docs/0.12/deploying/mod_wsgi/).
+then set up the site with `snh48schedule.wsgi`. See [Flask's documentation on mod_wsgi](http://flask.pocoo.org/docs/0.12/deploying/mod_wsgi/). Make sure this directory and `data/` (if it exists) is writable by web server processes (e.g. `www-data`).
 
 ## Todos
 
