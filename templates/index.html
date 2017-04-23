@@ -5,20 +5,23 @@
   <meta content="width=device-width,initial-scale=1" name="viewport">
   <title>SNH48直播日程</title>
   <style>
-    body { margin: 0; font-family: "Times New Roman", Times, "Songti SC", SimSun, serif; font-size: 16px; }
+    html { height: 100%; }
+    body { display: flex; flex-direction: column; height: 100%; margin: 0; font-family: "Times New Roman", Times, "Songti SC", SimSun, serif; font-size: 16px; }
     h1 { text-align: center; font-size: 2em; margin: 30px 0 15px 0; }
     #timezone-switcher { text-align: center; font-size: 80%; color: #999; user-select: none; }
     .china-standard-time #local-time, .local-time #china-standard-time { display: none; }
     .button { border-bottom: solid 1px; }
     .button:hover { cursor: pointer; }
     .hidden { display: none; }
-    .grid { max-width: 960px; margin: auto; display: grid; justify-content: center; grid-template-columns: repeat(auto-fill, 300px); grid-gap: 30px; margin: 30px auto; }
+    .grid { width: 100%; max-width: 960px; flex: 1 0 auto; display: grid; justify-content: center; grid-template-columns: repeat(auto-fill, 300px); grid-gap: 30px; margin: 30px auto; }
     .thumbnail { display: block; width: 300px; height: 160px; object-fit: contain; color: #333; background: #333; }
     .title, .subtitle, .datetime { display: block; }
     .title, .subtitle { margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .subtitle { font-size: 85%; }
     .leftshift { margin-left: -0.5em; }
     .datetime { font-size: 80%; color: #999; margin-top: 5px; }
+    footer { flex: none; text-align: center; padding-bottom: 30px; font-size: 80%; color: #999; }
+    footer a { color: inherit; }
   </style>
 </head>
 <body>
@@ -37,6 +40,7 @@
     </div>
     {%- endfor %}
   </div>
+  <footer>© 2017 <a href="https://www.youtube.com/channel/UC10BBCJQasWk_08Fdz0XCsQ" target="_blank">SNH48 Live</a> 源代码见<a href="https://github.com/SNH48Live/snh48schedule" target="—_blank">GitHub</a></footer>
   <script src="{{ url_for('static', filename='moment/latest/moment.min.js') }}"></script>
   <script>
     (function () {
