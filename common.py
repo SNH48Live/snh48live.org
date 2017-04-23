@@ -39,7 +39,7 @@ def install_rotating_file_handler(logger, filename, level=logging.INFO, formatte
 def safe_open(path, mode):
     if mode not in ('r', 'w', 'rb', 'wb'):
         raise NotImplementedError('%s is not a supported mode' % mode)
-    flags = os.O_RDONLY if mode.startswith('r') else (os.O_CREAT | os.O_WRONLY)
+    flags = os.O_RDONLY if mode.startswith('r') else (os.O_CREAT | os.O_WRONLY | os.O_TRUNC)
     try:
         fd = os.open(path, flags, mode=0o600)
     except OSError:
