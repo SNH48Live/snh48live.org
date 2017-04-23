@@ -53,8 +53,8 @@
           tag.dataset.chinaStandardTime = tag.textContent
           tag.textContent = moment(parseInt(tag.dataset.timestamp)).format('YYYY-MM-DD HH:mm:ss')
         })
-        timezoneSwitcher.classList.add('local-time');
-        timezoneSwitcher.classList.remove('china-standard-time');
+        timezoneSwitcher.classList.add('local-time')
+        timezoneSwitcher.classList.remove('china-standard-time')
       }
 
       var switchToChinaStandardTimeButton = document.querySelector('#local-time .button')
@@ -63,8 +63,8 @@
         document.querySelectorAll('.datetime').forEach(function (tag) {
           tag.textContent = tag.dataset.chinaStandardTime
         })
-        timezoneSwitcher.classList.add('china-standard-time');
-        timezoneSwitcher.classList.remove('local-time');
+        timezoneSwitcher.classList.add('china-standard-time')
+        timezoneSwitcher.classList.remove('local-time')
       }
     })()
   </script>
