@@ -60,7 +60,7 @@ def update():
     logger.info('updating...')
     setproctitle.setproctitle('snh48schedule_downloader')
     url = 'https://plive.48.cn/livesystem/api/live/v1/openLivePage'
-    payload = {'groupId': 10, 'type': 0}
+    payload = {'groupId': 10, 'type': 0, 'limit': 20}
     resp = requests.post(url, json=payload)
     if resp.status_code != 200:
         logger.error('failed to fetch schedule data: HTTP %d %s', resp.status_code, resp.reason)
