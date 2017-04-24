@@ -23,7 +23,11 @@ def strftime(timestamp):
 @app.route('/')
 def index():
     with safe_open(DATAFILE, 'r') as fp:
-        entries = [attrdict.AttrDict(entry) for entry in json.load(fp)] if fp is not None else []
+        try:
+            entries = [attrdict.AttrDict(entry) for entry in json.load(fp)] if fp is not None else []
+        except json.JSONDecodeError:
+            app.logger.error('failed to parse %s as JSON', DATAFILE)
+            flask.abort(500)
     return flask.render_template('index.html', entries=entries)
 
 # Alternatively, we can configure the underlying webserver to serve the images directory directly
