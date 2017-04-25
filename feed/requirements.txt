@@ -1,0 +1,6 @@
+Flask
+Flask-Cache
+Jinja2
+attrdict
+google-api-python-client
+feedgen
