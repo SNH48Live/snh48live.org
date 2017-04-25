@@ -56,21 +56,66 @@ def download_with_retry(url, path):
         except KeyboardInterrupt:
             break
 
-def update():
-    logger.info('updating...')
-    setproctitle.setproctitle('snh48schedule_downloader')
+# group_id's as used by Pocket 48:
+# - All: 0
+# - SNH48: 10
+# - BEJ48: 11
+# - GNZ48: 12
+# - SHY48: 13
+#
+# Returns a list of entries each of which looks like
+#
+# {
+#   "liveId": "58f6d89d0cf25cce6468bb81",
+#   "title": "《美丽世界》剧场公演",
+#   "subTitle": "TEAM HII剧场公演",
+#   "picPath": "/mediasource/live/14927442546691TlMjBZcE9.jpg",
+#   "isOpen": false,
+#   "startTime": 1493205300000,
+#   "count": {
+#     "praiseCount": 292,
+#     "commentCount": 9,
+#     "memberCommentCount": 0,
+#     "shareCount": 8,
+#     "quoteCount": 0
+#   },
+#   "isLike": false,
+#   "groupId": 10
+# }
+def fetch_group_schedule(group_id):
     url = 'https://plive.48.cn/livesystem/api/live/v1/openLivePage'
-    payload = {'groupId': 10, 'type': 0, 'limit': 20}
-    resp = requests.post(url, json=payload)
-    if resp.status_code != 200:
-        logger.error('failed to fetch schedule data: HTTP %d %s', resp.status_code, resp.reason)
-        return
-    data = attrdict.AttrDict(resp.json())
+    payload = {'groupId': group_id, 'type': 0, 'limit': 20}
+    # Printable version of request, used in logging
+    request_str = 'POST %s %s' % (url, json.dumps(payload))
+    logger.debug(request_str)
+    try:
+        resp = requests.post(url, json=payload, timeout=16)
+        if resp.status_code != 200:
+            logger.error('%s: HTTP %d %s', request_str, resp.status_code, resp.reason)
+            return []
+    except Exception as e:
+        logger.error('%s: %s: %s', request_str, type(e).__name__, e)
+        return []
+    return list(attrdict.AttrDict(resp.json()).content.liveList)
 
-    # Parse API response
+def update():
+    setproctitle.setproctitle('snh48schedule_downloader')
+    logger.info('updating...')
+
+    # SNH48
+    raw_entries = fetch_group_schedule(10)
+    # BEJ48, GNZ48, SHY48
+    for group_id in 11, 12, 13:
+        # Sniff out entries that contain SNH and/or 7SENSES
+        raw_entries += [entry for entry in fetch_group_schedule(group_id) if
+                        'SNH' in entry.title or '7SENSES' in entry.title or
+                        'SNH' in entry.subTitle or '7SENSES' in entry.subTitle]
+    raw_entries.sort(key=lambda entry: entry.startTime)
+
+    # Parse raw entries as returned by the API
     entries = []
     download_tasks = []
-    for entry in data.content.liveList:
+    for entry in raw_entries:
         title = entry.title.strip()
         subtitle = entry.subTitle.strip()
         timestamp = entry.startTime
