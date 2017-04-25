@@ -33,9 +33,9 @@
   <div class="grid">
     {%- for entry in entries %}
     <div class="item">
-      <img class="thumbnail" src="{{ url_for('image', filename=entry.local_filename) }}" alt="{{ entry.title }}">
-      <span class="title{% if entry.title.startswith('《') %} leftshift{% endif %}">{{ entry.title }}</span>
-      <span class="subtitle{% if entry.subtitle.startswith('《') %} leftshift{% endif %}">{{ entry.subtitle }}</span>
+      <img class="thumbnail" src="{{ url_for('image', filename=entry.local_filename) }}" alt="{{ entry.title }}" title="{{ entry.title }}">
+      <span class="title{% if entry.title.startswith('《') %} leftshift{% endif %}" title="{{ entry.title }}">{{ entry.title }}</span>
+      <span class="subtitle{% if entry.subtitle.startswith('《') %} leftshift{% endif %}" title="{{ entry.subtitle }}">{{ entry.subtitle }}</span>
       <time class="datetime" data-timestamp="{{ entry.timestamp }}">{{ entry.timestamp|strftime }}</time>
     </div>
     {%- endfor %}
