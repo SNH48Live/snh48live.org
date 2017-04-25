@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width,initial-scale=1" name="viewport">
+  <title>SNH48 Live</title>
+  <style>
+    html { height: 100%; }
+    body { width: 600px; height: 100%; display: flex; flex-direction: column; margin: 0 auto; font-family: "Times New Roman", Times, "Songti SC", SimSun, serif; font-size: 20px; text-align: justify; text-size-adjust: none; -webkit-text-size-adjust: none; }
+    main { flex: 1 0 auto; margin: 50px 0 30px 0; }
+    .logo { margin-bottom: 30px; }
+    .logo img { display: block; width: 100px; height: 100px; margin: 0 auto; }
+    h1, h2 { text-align: center; margin: 0.6em 0; }
+    h1 { font-size: 150%; }
+    h2 { font-size: 120%; }
+    p { margin: 1em; }
+    li { margin: 0.3em 0; }
+    a { color: inherit; text-decoration: none; border-bottom: dashed 1px; }
+    .social:before { content: ""; display: inline-block; height: 20px; width: 24px; position: relative; top: 3px; background-size: 20px 20px; background-repeat: no-repeat; }
+    .youtube:before { background-image: url(/static/youtube-play.svg) }
+    .twitter:before { background-image: url(/static/twitter.svg) }
+    .tumblr:before { background-image: url(/static/tumblr-square.svg) }
+    .github:before { background-image: url(/static/github.svg) }
+    footer { flex: none; padding-bottom: 30px; text-align: center; font-size: 15px; color: #999; }
+    @media (max-width: 600px) { body { width: 95%; } }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="logo"><img src="/static/logo.png" srcset="/static/logo-100.png 1x, /static/logo-200.png 2x, /static/logo-300.png 3x" alt="logo"></div>
+    <h1>SNH48 Live</h1>
+    <h2>关于</h2>
+    <p><a href="https://www.youtube.com/SNH48Live" target="_blank">SNH48 Live</a>是一个致力于搬运SNH48公演官方录播的YouTube频道。详情请见<a href="https://github.com/SNH48Live/SNH48Live/blob/master/about.md#readme" target="_blank">本站的详细说明</a>。</p>
+    <p>联系邮箱：<script>var email = window.atob('c25oNDhsaXZlQGdtYWlsLmNvbQo='); document.write('<a href="mailto:' + email + '">' + email + '<' + '/a>');</script><noscript><img src="/static/email.png" alt="email" width="182" height="25" style="vertical-align: middle"></noscript></p>
+    <h2>本站链接</h2>
+    <ul>
+      <li><a class="social youtube" href="https://www.youtube.com/SNH48Live" target="_blank">YouTube</a></li>
+      <li><a class="social twitter" href="https://twitter.com/snh48live" target="_blank">Twitter</a></li>
+      <li><a class="social tumblr" href="https://snh48live.tumblr.com" target="_blank">Tumblr</a></li>
+      <li><a class="social github" href="https://github.com/SNH48Live/" target="_blank">GitHub</a></li>
+      <li><a href="/schedule/">直播日程</a></li>
+    </ul>
+    <h2>第三方链接</h2>
+    <ul>
+      <li><a href="http://www.snh48.com" target="_blank">SNH48官网</a></li>
+      <li><a href="http://live.snh48.com" target="_blank">SNH48官方直播站</a></li>
+    </ul>
+  </main>
+  <footer>© 2017 <a href="https://snh48live.org">SNH48 Live</a> · <a href="https://www.youtube.com/SNH48Live" target="_blank">YouTube</a> · 源代码见<a href="https://github.com/SNH48Live/snh48live.org" target="_blank">GitHub</a></footer>
+</body>
+</html>
