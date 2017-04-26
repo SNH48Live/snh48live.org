@@ -1,4 +1,4 @@
 all: deploy
 
 deploy:
-	rsync -avP --delete src/ _site
+	rsync -avP --delete root/ _site
