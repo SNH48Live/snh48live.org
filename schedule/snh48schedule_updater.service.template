@@ -1,0 +1,11 @@
+[Unit]
+Description=snh48schedule updater daemon
+
+[Service]
+Type=forking
+User=www-data
+ExecStart=$PWD$/venv/bin/python $PWD$/update.py
+RuntimeDirectory=snh48schedule
+
+[Install]
+WantedBy=multi-user.target

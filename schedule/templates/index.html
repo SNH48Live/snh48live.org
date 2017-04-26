@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width,initial-scale=1" name="viewport">
+  <title>SNH48直播日程</title>
+  <style>
+    html { height: 100%; }
+    body { display: flex; flex-direction: column; height: 100%; margin: 0; font-family: "Times New Roman", Times, "Songti SC", SimSun, serif; font-size: 16px; text-size-adjust: none; -webkit-text-size-adjust: none; }
+    h1 { text-align: center; font-size: 30px; margin: 30px 0 15px 0; }
+    #timezone-switcher { text-align: center; font-size: 80%; color: #999; user-select: none; }
+    .china-standard-time #local-time, .local-time #china-standard-time { display: none; }
+    .button { border-bottom: solid 1px; }
+    .button:hover { cursor: pointer; }
+    .hidden { display: none; }
+    .grid { width: 100%; max-width: 960px; flex: 1 0 auto; display: grid; align-content: flex-start; justify-content: center; grid-template-columns: repeat(auto-fill, 300px); grid-gap: 30px; margin: 30px auto; }
+    .thumbnail { display: block; width: 300px; height: 160px; object-fit: contain; color: #333; background: #333; }
+    .title, .subtitle, .datetime { display: block; }
+    .title, .subtitle { margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .subtitle { font-size: 85%; }
+    .leftshift { margin-left: -0.5em; }
+    .datetime { font-size: 80%; color: #999; margin-top: 5px; }
+    footer { flex: none; text-align: center; padding-bottom: 30px; font-size: 15px; color: #999; }
+    footer a { color: inherit; text-decoration: none; border-bottom: dashed 1px; }
+  </style>
+</head>
+<body>
+  <h1>SNH48直播日程</h1>
+  <div id="timezone-switcher" class="china-standard-time">
+    <div id="china-standard-time"><span>当前显示时区：北京时间</span><br><span class="button hidden">切换至本地时间</span></div>
+    <div id="local-time"><span>当前显示时区：本地时间</span><br><span class="button hidden">切换至北京时间</span></div>
+  </div>
+  <div class="grid">
+    {%- for entry in entries %}
+    <div class="item">
+      <img class="thumbnail" src="{{ url_for('image', filename=entry.local_filename) }}" alt="{{ entry.title }}" title="{{ entry.title }}">
+      <span class="title{% if entry.title.startswith('《') %} leftshift{% endif %}" title="{{ entry.title }}">{{ entry.title }}</span>
+      <span class="subtitle{% if entry.subtitle.startswith('《') %} leftshift{% endif %}" title="{{ entry.subtitle }}">{{ entry.subtitle }}</span>
+      <time class="datetime" data-timestamp="{{ entry.timestamp }}">{{ entry.timestamp|strftime }}</time>
+    </div>
+    {%- endfor %}
+  </div>
+  <footer>© 2017 <a href="https://snh48live.org">SNH48 Live</a> · <a href="https://www.youtube.com/SNH48Live" target="_blank">YouTube</a> · 源代码见<a href="https://github.com/SNH48Live/snh48schedule" target="_blank">GitHub</a></footer>
+  <script src="{{ url_for('static', filename='moment/latest/moment.min.js') }}"></script>
+  <script>
+    (function () {
+      var timezoneSwitcher = document.getElementById('timezone-switcher')
+
+      var switchToLocalTimeButton = document.querySelector('#china-standard-time .button')
+      switchToLocalTimeButton.classList.remove('hidden')
+      switchToLocalTimeButton.onclick = function () {
+        document.querySelectorAll('.datetime').forEach(function (tag) {
+          tag.dataset.chinaStandardTime = tag.textContent
+          tag.textContent = moment(parseInt(tag.dataset.timestamp)).format('YYYY-MM-DD HH:mm:ss')
+        })
+        timezoneSwitcher.classList.add('local-time')
+        timezoneSwitcher.classList.remove('china-standard-time')
+      }
+
+      var switchToChinaStandardTimeButton = document.querySelector('#local-time .button')
+      switchToChinaStandardTimeButton.classList.remove('hidden')
+      switchToChinaStandardTimeButton.onclick = function () {
+        document.querySelectorAll('.datetime').forEach(function (tag) {
+          tag.textContent = tag.dataset.chinaStandardTime
+        })
+        timezoneSwitcher.classList.add('china-standard-time')
+        timezoneSwitcher.classList.remove('local-time')
+      }
+    })()
+  </script>
+</body>
+</html>
+
+{#- Local Variables: -#}
+{#- mode: jinja2 -#}
+{#- End: -#}
