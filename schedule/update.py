@@ -18,11 +18,11 @@ from common import DATAFILE, IMAGEDIR, install_rotating_file_handler, safe_open
 UPDATE_INTERVAL = 1800
 
 XDG_RUNTIME_DIR = os.getenv('XDG_RUNTIME_DIR')
-RUNTIME_DIR = os.path.join(XDG_RUNTIME_DIR if XDG_RUNTIME_DIR else '/tmp', 'snh48schedule')
+RUNTIME_DIR = os.path.join(XDG_RUNTIME_DIR if XDG_RUNTIME_DIR else '/tmp', 'snh48live-schedule')
 os.makedirs(RUNTIME_DIR, exist_ok=True)
 PIDFILE = os.path.join(RUNTIME_DIR, 'updater.pid')
 
-logger = logging.getLogger('snh48schedule_updater')
+logger = logging.getLogger('snh48live-schedule')
 install_rotating_file_handler(logger, 'updater.log')
 
 def md5sum(s):
@@ -99,7 +99,6 @@ def fetch_group_schedule(group_id):
     return list(attrdict.AttrDict(resp.json()).content.liveList)
 
 def update():
-    setproctitle.setproctitle('snh48schedule_downloader')
     logger.info('updating...')
 
     # SNH48
@@ -150,7 +149,7 @@ def update():
 
 def periodic_updater():
     try:
-        setproctitle.setproctitle('snh48schedule_updater')
+        setproctitle.setproctitle('snh48live-schedule')
         while True:
             try:
                 update()
@@ -162,7 +161,7 @@ def periodic_updater():
 
 def start_daemon():
     daemon = daemonize.Daemonize(
-        app='snh48schedule_updater',
+        app='snh48live-schedule',
         pid=PIDFILE,
         action=periodic_updater,
         keep_fds=[handler.stream.fileno() for handler in logger.handlers],

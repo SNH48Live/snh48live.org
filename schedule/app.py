@@ -10,7 +10,6 @@ import tempfile
 import arrow
 import attrdict
 import flask
-import setproctitle
 
 from common import DATAFILE, IMAGEDIR, install_rotating_file_handler, safe_open
 
@@ -59,6 +58,5 @@ def init():
     install_rotating_file_handler(app.logger, 'server.log')
 
 if __name__ == '__main__':
-    setproctitle.setproctitle('snh48schedule')
     init()
     app.run(debug=True)

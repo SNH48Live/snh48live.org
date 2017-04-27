@@ -1,11 +1,11 @@
 [Unit]
-Description=snh48schedule updater daemon
+Description=https://snh48live.org/schedule/ updater daemon
 
 [Service]
 Type=forking
 User=www-data
 ExecStart=$PWD$/venv/bin/python $PWD$/update.py
-RuntimeDirectory=snh48schedule
+RuntimeDirectory=snh48live-schedule
 
 [Install]
 WantedBy=multi-user.target
