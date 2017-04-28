@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
+# SVG optimization is done via svgo(1) from https://github.com/svg/svgo.
+
 import datetime
 import logging
 import os
+import subprocess
 
 import googleapiclient.discovery
 import httplib2
@@ -85,6 +88,15 @@ def fetch_cumulated_stats(youtube_analytics, end_date):
     ).execute()
     return tuple(map(int, response['rows'][0]))
 
+def optimize_svg(path):
+    try:
+        temppath = '%s.min' % path
+        subprocess.check_call(['svgo', path, temppath], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except subprocess.CalledProcessError:
+        return
+    if os.path.isfile(temppath):
+        os.rename(temppath, path)
+
 # datapoints should be a list of 60 data points.
 # title should be capatalized and will be converted to lower case for the ylabel.
 def make_plot(datapoints, title, start_date, end_date, filename=None):
@@ -104,8 +116,10 @@ def make_plot(datapoints, title, start_date, end_date, filename=None):
 
     if filename is None:
         filename = '%s.svg' % title.lower().replace(' ', '-')
-    with utils.atomic_writer(os.path.join(DATADIR, filename), binary=True) as fp:
-        plt.savefig(fp, dpi=72)
+    path = os.path.join(DATADIR, filename)
+    with utils.atomic_writer(path, binary=True) as fp:
+        plt.savefig(fp)
+    optimize_svg(path)
 
 def make_data_plots(data):
     # If there are fewer than 61 data points, insert zeros
