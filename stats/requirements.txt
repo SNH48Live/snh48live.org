@@ -1,3 +1,5 @@
+daemonize
 google-api-python-client
 matplotlib
 peewee
+setproctitle

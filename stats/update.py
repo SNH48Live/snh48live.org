@@ -6,13 +6,16 @@ import datetime
 import logging
 import os
 import subprocess
+import time
 
+import daemonize
 import googleapiclient.discovery
 import httplib2
 import oauth2client.client
 import oauth2client.file
 import oauth2client.tools
 import peewee
+import setproctitle
 
 import matplotlib
 matplotlib.use('svg')
@@ -46,6 +49,14 @@ database = peewee.SqliteDatabase(DATABASE)
 
 logger = logging.getLogger('snh48live-schedule')
 utils.install_rotating_file_handler(logger, 'updater.log')
+
+# Update once per day
+UPDATE_INTERVAL = 86400
+
+XDG_RUNTIME_DIR = os.getenv('XDG_RUNTIME_DIR')
+RUNTIME_DIR = os.path.join(XDG_RUNTIME_DIR if XDG_RUNTIME_DIR else '/tmp', 'snh48live-stats')
+os.makedirs(RUNTIME_DIR, exist_ok=True)
+PIDFILE = os.path.join(RUNTIME_DIR, 'updater.pid')
 
 class Date(peewee.Model):
     date = peewee.TextField(unique=True)
@@ -213,11 +224,27 @@ def update(youtube_analytics):
     make_data_plots(data)
     write_data_csv(data)
 
-def main():
+def periodic_updater():
+    setproctitle.setproctitle('snh48live-stats')
+    database.connect()
     database.create_tables([Date], safe=True)
     youtube_analytics = get_authenticated_service()
-    update(youtube_analytics)
-    # print('\n'.join(','.join(map(str, row)) for row in data))
+    while True:
+        try:
+            update(youtube_analytics)
+        except Exception as e:
+            logger.error('update failed: %s: %s', type(e).__name__, e)
+        time.sleep(UPDATE_INTERVAL - time.time() % UPDATE_INTERVAL)
+
+def main():
+    daemon = daemonize.Daemonize(
+        app='snh48live-stats',
+        pid=PIDFILE,
+        action=periodic_updater,
+        keep_fds=[handler.stream.fileno() for handler in logger.handlers],
+        logger=logger,
+    )
+    daemon.start()
 
 if __name__ == '__main__':
     main()
