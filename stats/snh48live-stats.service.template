@@ -1,0 +1,11 @@
+[Unit]
+Description=https://snh48live.org/stats/ updater daemon
+
+[Service]
+Type=forking
+User=www-data
+ExecStart=$PWD$/venv/bin/python $PWD$/update.py
+RuntimeDirectory=snh48live-stats
+
+[Install]
+WantedBy=multi-user.target
