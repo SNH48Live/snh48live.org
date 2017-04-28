@@ -51,7 +51,7 @@ logger = logging.getLogger('snh48live-schedule')
 utils.install_rotating_file_handler(logger, 'updater.log')
 
 # Update once per day
-UPDATE_INTERVAL = 86400
+UPDATE_INTERVAL = 21600
 
 XDG_RUNTIME_DIR = os.getenv('XDG_RUNTIME_DIR')
 RUNTIME_DIR = os.path.join(XDG_RUNTIME_DIR if XDG_RUNTIME_DIR else '/tmp', 'snh48live-stats')
