@@ -18,6 +18,7 @@ import matplotlib
 matplotlib.use('svg')
 import matplotlib.pyplot as plt
 plt.rcParams.update({'font.family': 'Consolas', 'font.size': 16})
+from matplotlib.ticker import MaxNLocator
 
 import utils
 
@@ -108,6 +109,9 @@ def make_plot(datapoints, title, start_date, end_date, filename=None):
     # Hide right and top spines
     plt.gca().spines['right'].set_visible(False)
     plt.gca().spines['top'].set_visible(False)
+    # Force integral ticks on the y-axis
+    plt.gca().yaxis.set_major_locator(MaxNLocator(integer=True))
+
     plt.plot(offsets, datapoints, 'o-', color='#00e600')
     for x, y in zip(offsets, datapoints):
         # Put the actual number on the every 5th point
