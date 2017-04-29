@@ -30,7 +30,7 @@ def feed():
     fg.language('zh-cmn-Hans-CN')
     content_template = jinja2.Template('''\
     <p><img src="{{ thumbnail_url }}" alt="{{ video_url }}"></p>
-    {%- for line in description.split() -%}
+    {%- for line in description.split('\n') -%}
     {%- if line -%}<p>{{ line|urlize }}</p>{%- endif -%}
     {%- endfor -%}''')
     for video in api.list_videos(youtube):
