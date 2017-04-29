@@ -5,9 +5,16 @@ die () { echo -E "Error: $*" >&2; exit 1; }
 user=${WWW_USER:-www-data}
 group=${WWW_GROUP:-www-data}
 here=$0:A:h
+root=$here:h
 
 [[ -f $here/client_secrets.json ]] || die 'client_secrets.json does not exist.'
-[[ -f $here/venv/bin/python ]] || die 'venv/bin/python does not exist.'
+if [[ -f $here/venv/bin/python ]]; then
+    python=$here/venv/bin/python
+elif [[ -f $root/venv/bin/python ]]; then
+    python=$root/venv/bin/python
+else
+    die 'venv/bin/python does not exist.'
+fi
 
 dirs=(
     data
@@ -29,4 +36,4 @@ for file in $files; do
     sudo chmod 640 $here/$file
 done
 
-sudo su $user -s /bin/sh -c "$here/venv/bin/python $here/update.py --authenticate --noauth_local_webserver"
+sudo su $user -s /bin/sh -c "$python $here/update.py --authenticate --noauth_local_webserver"
