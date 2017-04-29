@@ -2,10 +2,12 @@
 
 # SVG optimization is done via svgo(1) from https://github.com/svg/svgo.
 
+import argparse
 import datetime
 import logging
 import os
 import subprocess
+import sys
 import time
 
 import daemonize
@@ -68,7 +70,7 @@ class Date(peewee.Model):
     class Meta:
         database = database
 
-def get_authenticated_service():
+def get_authenticated_service(args=None):
     flow = oauth2client.client.flow_from_clientsecrets(
         CLIENT_SECRETS_FILE,
         scope=YOUTUBE_ANALYTICS_READONLY_SCOPE,
@@ -78,7 +80,7 @@ def get_authenticated_service():
     credentials = storage.get()
 
     if credentials is None or credentials.invalid:
-        credentials = oauth2client.tools.run_flow(flow, storage)
+        credentials = oauth2client.tools.run_flow(flow, storage, args)
 
     return googleapiclient.discovery.build(
         YOUTUBE_ANALYTICS_API_SERVICE_NAME,
@@ -237,6 +239,14 @@ def periodic_updater():
         time.sleep(UPDATE_INTERVAL - time.time() % UPDATE_INTERVAL)
 
 def main():
+    parser = argparse.ArgumentParser(parents=[oauth2client.tools.argparser])
+    parser.add_argument('--authenticate', action='store_true')
+    args = parser.parse_args()
+
+    if args.authenticate:
+        get_authenticated_service(args)
+        sys.exit(0)
+
     daemon = daemonize.Daemonize(
         app='snh48live-stats',
         pid=PIDFILE,
