@@ -238,15 +238,7 @@ def periodic_updater():
             logger.error('update failed: %s: %s', type(e).__name__, e)
         time.sleep(UPDATE_INTERVAL - time.time() % UPDATE_INTERVAL)
 
-def main():
-    parser = argparse.ArgumentParser(parents=[oauth2client.tools.argparser])
-    parser.add_argument('--authenticate', action='store_true')
-    args = parser.parse_args()
-
-    if args.authenticate:
-        get_authenticated_service(args)
-        sys.exit(0)
-
+def start_daemon():
     daemon = daemonize.Daemonize(
         app='snh48live-stats',
         pid=PIDFILE,
@@ -255,6 +247,26 @@ def main():
         logger=logger,
     )
     daemon.start()
+
+def main():
+    parser = argparse.ArgumentParser(parents=[oauth2client.tools.argparser])
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('--authenticate', action='store_true',
+                       help='authenticate only (one-time, interactive)')
+    group.add_argument('--daemon', action='store_true',
+                       help='run in daemon mode (beware of RAM consumption)')
+    args = parser.parse_args()
+
+    if args.authenticate:
+        get_authenticated_service(args)
+        sys.exit(0)
+
+    if args.daemon:
+        start_daemon()
+    else:
+        database.connect()
+        database.create_tables([Date], safe=True)
+        update(get_authenticated_service())
 
 if __name__ == '__main__':
     main()
