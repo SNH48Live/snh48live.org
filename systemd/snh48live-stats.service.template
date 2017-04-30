@@ -1,0 +1,8 @@
+[Unit]
+Description=https://snh48live.org/stats/ updater
+
+[Service]
+Type=oneshot
+User=@@USER@@
+ExecStart=@@ROOT@@venv/bin/python @@ROOT@@stats/update.py
+RuntimeDirectory=snh48live-stats
