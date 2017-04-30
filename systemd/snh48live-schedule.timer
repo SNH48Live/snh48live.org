@@ -1,0 +1,10 @@
+[Unit]
+Description=https://snh48live.org/schedule/ updater scheduler
+
+[Timer]
+OnActiveSec=0s
+OnCalendar=hourly
+Persistent=true
+
+[Install]
+WantedBy=timers.target

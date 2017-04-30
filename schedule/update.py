@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import hashlib
 import json
 import logging
@@ -169,5 +170,16 @@ def start_daemon():
     )
     daemon.start()
 
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--daemon', action='store_true',
+                        help='run in daemon mode (beware of RAM consumption)')
+    args = parser.parse_args()
+
+    if args.daemon:
+        start_daemon()
+    else:
+        update()
+
 if __name__ == '__main__':
-    start_daemon()
+    main()

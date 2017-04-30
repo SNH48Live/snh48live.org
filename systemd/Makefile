@@ -1,6 +1,6 @@
 WWW_USER ?= www-data
 ROOT := $(dir $(CURDIR))
-components = stats
+components = schedule stats
 services = $(components:%=snh48live-%.service)
 timers = $(components:%=snh48live-%.timer)
 

@@ -1,0 +1,8 @@
+[Unit]
+Description=https://snh48live.org/schedule/ updater
+
+[Service]
+Type=oneshot
+User=@@USER@@
+ExecStart=@@ROOT@@venv/bin/python @@ROOT@@schedule/update.py
+RuntimeDirectory=snh48live-schedule
