@@ -120,6 +120,17 @@ def update():
         title = entry.title.strip()
         subtitle = entry.subTitle.strip()
         timestamp = entry.startTime
+        group_id = entry.groupId
+        if group_id == 10:
+            platform = 'live.snh48.com'
+        elif group_id == 11:
+            platform = 'live.bej48.com'
+        elif group_id == 12:
+            platform = 'live.gnz48.com'
+        elif group_id == 13:
+            platform = 'live.shy48.com'
+        else:
+            raise NotImplementedError('unrecgonized groupId %s: %s' % (group_id, entry))
         thumbnail_url = 'https://source.48.cn%s' % entry.picPath
         image_filename = '%s-%s.jpg' % (
             arrow.get(timestamp / 1000).to('Asia/Shanghai').strftime('%Y%m%d%H%M%S'),
@@ -129,6 +140,7 @@ def update():
             'title': title,
             'subtitle': subtitle,
             'timestamp': timestamp,
+            'platform': platform,
             'thumbnail_url': thumbnail_url,
             'local_filename': image_filename,
         })
