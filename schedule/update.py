@@ -6,6 +6,7 @@ import json
 import logging
 import multiprocessing.pool
 import os
+import re
 import time
 
 import arrow
@@ -105,11 +106,11 @@ def update():
     # SNH48
     raw_entries = fetch_group_schedule(10)
     # BEJ48, GNZ48, SHY48
+    keywords = re.compile(r'SNH|7SENSES|TEAM ?([SNH]II(?!I)|X(II)?)', re.I)
     for group_id in 11, 12, 13:
         # Sniff out entries that contain SNH and/or 7SENSES
         raw_entries += [entry for entry in fetch_group_schedule(group_id) if
-                        'SNH' in entry.title or '7SENSES' in entry.title or
-                        'SNH' in entry.subTitle or '7SENSES' in entry.subTitle]
+                        keywords.match(entry.title) or keywords.match(entry.subTitle)]
     raw_entries.sort(key=lambda entry: entry.startTime)
 
     # Parse raw entries as returned by the API
