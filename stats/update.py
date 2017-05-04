@@ -139,16 +139,24 @@ def make_plot(datapoints, title, start_date, end_date, filename=None):
         plt.savefig(fp)
     optimize_svg(path)
 
+# Datetime and str conversion utilities; datetime is always converted to
+# Pacific Time (PST or PDT) which is the reporting timezone of YouTube
+# Analytics.
+def date2str(date):
+    return arrow.get(date).to('America/Los_Angeles').strftime('%Y-%m-%d')
+
+def str2date(datestr):
+    return arrow.get(datestr, 'YYYY-MM-DD', tzinfo='America/Los_Angeles').datetime
+
 def make_data_plots(data):
     # If there are fewer than 61 data points, insert zeros
     if len(data) < 61:
         data = data.copy()
-        date = datetime.datetime.strptime(data[0][0], '%Y-%m-%d').date()
+        date = str2date(data[0][0])
         one_day = datetime.timedelta(days=1)
         while len(data) < 61:
             date -= one_day
-            data.insert(0, (date.strftime('%Y-%m-%d'), 0, 0, 0, 0))
-
+            data.insert(0, (date2str(date), 0, 0, 0, 0))
 
     # Plot totals
     dates, subscribers_gained, subscribers_lost, views, estimated_minutes_watched = tuple(zip(*data))
@@ -183,15 +191,15 @@ def update(youtube_analytics):
     except AttributeError:  # Accessing .date of None
         starting_date = STARTING_DATE
 
-    date = datetime.datetime.strptime(starting_date, '%Y-%m-%d').date()
-    today = datetime.date.today()
+    date = str2date(starting_date)
+    today = arrow.get().datetime
     one_day = datetime.timedelta(days=1)
 
     data = []
     # The YouTube Analytics lags behind for at least two full days. We
     # only fetch data up to three days before today.
-    while date + one_day * 3 <= today:
-        date_str = date.strftime('%Y-%m-%d')
+    while date + one_day * 2 <= today:
+        date_str = date2str(date)
         data.append((date_str,) + fetch_cumulated_stats(youtube_analytics, date_str))
         date += one_day
 

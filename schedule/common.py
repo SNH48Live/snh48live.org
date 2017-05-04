@@ -6,7 +6,7 @@ import logging
 import logging.handlers
 import os
 
-HERE = os.path.dirname(__file__)
+HERE = os.path.dirname(os.path.realpath(__file__))
 
 DATADIR = os.path.join(HERE, 'data')
 os.makedirs(DATADIR, exist_ok=True)
