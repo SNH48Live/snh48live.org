@@ -1,0 +1,5 @@
+Flask
+# 1.0.0 seems to bring breaking changes that require porting
+Flask-Restless==0.17.0
+Flask-SQLAlchemy
+requirements

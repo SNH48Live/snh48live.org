@@ -1,0 +1,31 @@
+{
+  "name": "snh48live-filter",
+  "dependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-standalone": "^6.24.0",
+    "babili": "0.0.12",
+    "clean-css-cli": "^4.1.0",
+    "promise-polyfill": "^6.0.2",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
+    "react-infinite": "^0.10.0",
+    "urijs": "^1.18.10",
+    "whatwg-fetch": "^2.0.3"
+  },
+  "scripts": {
+    "build": "npm run build-js && npm run build-css",
+    "build-js": "babel static/ui.jsx -o static/ui.min.js -s",
+    "build-css": "cleancss static/styles.css -o static/styles.min.css --source-map"
+  },
+  "author": "SNH48Live <snh48live@gmail.com>",
+  "license": "MIT",
+  "babel": {
+    "presets": [
+      "es2015",
+      "react",
+      "babili"
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width,initial-scale=1" name="viewport">
+  <title>{{ title }}</title>
+{%- if config.DEVEL %}
+  <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
+{%- else %}
+  <link href="{{ url_for('static', filename='styles.min.css') }}" rel="stylesheet">
+{%- endif %}
+  <script>window.APPROOT = '{{ request.script_root }}'</script>
+</head>
+
+{#- Local Variables: -#}
+{#- mode: jinja2 -#}
+{#- End: -#}

@@ -1,0 +1,32 @@
+{% set title %}SNH48公演一览{% endset %}
+{%- include 'header.html' %}
+<body>
+  <main>
+    <h1>{{ title }}</h1>
+    <nav>
+      <a href="/">首页</a>
+      <a href="{{ url_for('about') }}">关于</a>
+      <a href="https://github.com/SNH48Live/snh48live.org/tree/master/filter/docs/api.md" target="_blank">API文档</a>
+    </nav>
+    <div id="filters"></div>
+    <div id="results"></div>
+  </main>
+{% include 'footer.html' %}
+  <script src="{{ url_for('static', filename='react/latest/react.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='react-dom/latest/react-dom.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='react-infinite/latest/react-infinite.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='urijs/latest/URI.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='promise-polyfill/latest/promise.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='whatwg-fetch/latest/fetch.min.js') }}"></script>
+{%- if config.DEVEL %}
+  <script src="{{ url_for('static', filename='babel-standalone/latest/babel.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='ui.jsx') }}" type="text/jsx"></script>
+{%- else %}
+  <script src="{{ url_for('static', filename='ui.min.js') }}"></script>
+{%- endif %}
+</body>
+</html>
+
+{#- Local Variables: -#}
+{#- mode: jinja2 -#}
+{#- End: -#}

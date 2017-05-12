@@ -1,0 +1,25 @@
+{% include 'header.html' %}
+<body>
+  <main>
+    {%- if youtube_link %}
+    <h1><a href="{{ youtube_link }}" target="_blank">{{ title }}</a></h1>
+    {%- else %}
+    <h1>{{ title }}</h1>
+    {%- endif %}
+    <nav>
+      <a href="{{ url_for('index') }}">返回列表</a>
+    </nav>
+    <p class="standalone-entry">
+      <img class="thumbnail" src="{{ imgsrc }}" alt="{{ title }}">
+      {%- for performer in performers %}
+      <a href="{{ url_for('index', member=performer) }}">{{ performer }}</a>
+      {%- endfor %}
+    </p>
+  </main>
+{% include 'footer.html' %}
+</body>
+</html>
+
+{#- Local Variables: -#}
+{#- mode: jinja2 -#}
+{#- End: -#}
