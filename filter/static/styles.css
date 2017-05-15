@@ -115,6 +115,7 @@ a {
 
 article {
     padding: 10px;
+    text-align: justify;
 }
 
 @media (max-width: 799px) {
