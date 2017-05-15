@@ -199,6 +199,7 @@ def update_hook():
         message = 'GET %s: HTTP %d' % (DATAURL, resp.status_code)
         return flask.jsonify(dict(message=message)), 500
 
+    new_records = []
     performances = []
     for line in resp.iter_lines(decode_unicode=True):
         obj = json.loads(line)
@@ -206,12 +207,13 @@ def update_hook():
             # Hitting existing records
             break
         else:
+            new_records.append(obj)
             performances.append(Performance(**obj))
     resp.close()
     # Note that records appearing earlier in the stream should be inserted later
     db.session.bulk_save_objects(reversed(performances))
     db.session.commit()
-    return flask.jsonify(dict(message='Success')), 200
+    return flask.jsonify(dict(message='Success', new_records=new_records)), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
