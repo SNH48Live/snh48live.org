@@ -1,6 +1,9 @@
 From https://github.com/encharm/Font-Awesome-SVG-PNG:
+- calendar.svg
 - feed.svg
 - github.svg
+- line-chart.svg
+- list.svg
 - tumblr-square.svg
 - twitter.svg
 - youtube-play.svg
@@ -25,3 +28,5 @@ FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+The Font Awesome font is licensed under the SIL OFL 1.1: http://scripts.sil.org/OFL

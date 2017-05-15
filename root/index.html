@@ -17,12 +17,15 @@
     p { margin: 1em; }
     li { margin: 0.3em 0; }
     a { color: inherit; text-decoration: none; border-bottom: dashed 1px; }
-    .social:before { content: ""; display: inline-block; height: 20px; width: 24px; position: relative; top: 3px; background-size: 20px 20px; background-repeat: no-repeat; }
+    .icon:before { content: ""; display: inline-block; height: 20px; width: 24px; position: relative; top: 3px; background-size: 20px 20px; background-repeat: no-repeat; }
     .youtube:before { background-image: url(/static/youtube-play.svg) }
     .twitter:before { background-image: url(/static/twitter.svg) }
     .tumblr:before { background-image: url(/static/tumblr-square.svg) }
     .github:before { background-image: url(/static/github.svg) }
     .feed:before { background-image: url(/static/feed.svg) }
+    .schedule:before { background-image: url(/static/calendar.svg) }
+    .filter:before { background-image: url(/static/list.svg) }
+    .stats:before { background-image: url(/static/line-chart.svg) }
     footer { flex: none; padding-bottom: 30px; text-align: center; font-size: 15px; color: #999; }
     @media (max-width: 600px) { body { width: 95%; } }
   </style>
@@ -36,14 +39,14 @@
     <p>联系邮箱：<script>var email = window.atob('c25oNDhsaXZlQGdtYWlsLmNvbQo='); document.write('<a href="mailto:' + email + '">' + email + '<' + '/a>');</script><noscript><img src="/static/email.png" alt="email" width="182" height="25" style="vertical-align: middle"></noscript></p>
     <h2>本站链接</h2>
     <ul>
-      <li><a class="social youtube" href="https://www.youtube.com/SNH48Live" target="_blank">YouTube</a></li>
-      <li><a class="social twitter" href="https://twitter.com/snh48live" target="_blank">Twitter</a></li>
-      <li><a class="social tumblr" href="https://snh48live.tumblr.com" target="_blank">Tumblr</a></li>
-      <li><a class="social github" href="https://github.com/SNH48Live/" target="_blank">GitHub</a></li>
-      <li><a class="social feed" href="/feed/" target="_blank">Atom</a></li>
-      <li><a href="/schedule/">直播日程</a></li>
-      <li><a href="/filter/">公演检索</a></li>
-      <li><a href="/stats/">频道数据</a></li>
+      <li><a class="icon youtube" href="https://www.youtube.com/SNH48Live" target="_blank">YouTube</a></li>
+      <li><a class="icon twitter" href="https://twitter.com/snh48live" target="_blank">Twitter</a></li>
+      <li><a class="icon tumblr" href="https://snh48live.tumblr.com" target="_blank">Tumblr</a></li>
+      <li><a class="icon github" href="https://github.com/SNH48Live/" target="_blank">GitHub</a></li>
+      <li><a class="icon feed" href="/feed/" target="_blank">Atom</a></li>
+      <li><a class="icon schedule" href="/schedule/">直播日程</a></li>
+      <li><a class="icon filter" href="/filter/">公演检索</a></li>
+      <li><a class="icon stats" href="/stats/">频道数据</a></li>
     </ul>
     <h2>第三方链接</h2>
     <ul>
