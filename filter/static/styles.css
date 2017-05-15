@@ -118,7 +118,7 @@ article {
 }
 
 @media (max-width: 799px) {
-    #filters, #results {
+    main {
         width: 100vw;
     }
 
