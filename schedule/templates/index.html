@@ -61,7 +61,7 @@
       var switchToChinaStandardTimeButton = document.querySelector('#local-time .button')
       switchToChinaStandardTimeButton.classList.remove('hidden')
       switchToChinaStandardTimeButton.onclick = function () {
-        document.querySelectorAll('time[chinaStandardTime]').forEach(function (tag) {
+        document.querySelectorAll('time[data-china-standard-time]').forEach(function (tag) {
           tag.textContent = tag.dataset.chinaStandardTime
         })
         timezoneSwitcher.classList.add('china-standard-time')
