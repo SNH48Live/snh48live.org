@@ -131,7 +131,7 @@ def update():
             platform = 'live.shy48.com'
         else:
             raise NotImplementedError('unrecgonized groupId %s: %s' % (group_id, entry))
-        thumbnail_url = 'https://source.48.cn%s' % entry.picPath
+        thumbnail_url = 'https://source1.48.cn%s' % entry.picPath
         image_filename = '%s-%s.jpg' % (
             arrow.get(timestamp / 1000).to('Asia/Shanghai').strftime('%Y%m%d%H%M%S'),
             md5sum(thumbnail_url),
