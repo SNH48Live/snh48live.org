@@ -11,9 +11,7 @@ import time
 
 import arrow
 import attrdict
-import daemonize
 import requests
-import setproctitle
 
 from common import DATAFILE, IMAGEDIR, install_rotating_file_handler, safe_open
 
@@ -162,6 +160,7 @@ def update():
             pool.join()
 
 def periodic_updater():
+    import setproctitle
     try:
         setproctitle.setproctitle('snh48live-schedule')
         while True:
@@ -174,6 +173,7 @@ def periodic_updater():
         pass
 
 def start_daemon():
+    import daemonize
     daemon = daemonize.Daemonize(
         app='snh48live-schedule',
         pid=PIDFILE,

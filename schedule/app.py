@@ -9,6 +9,7 @@ import tempfile
 
 import arrow
 import attrdict
+import babel.dates
 import flask
 
 from common import DATAFILE, IMAGEDIR, install_rotating_file_handler, safe_open
@@ -17,7 +18,9 @@ app = flask.Flask(__name__)
 
 @app.template_filter('strftime')
 def strftime(timestamp):
-    return arrow.get(timestamp / 1000).to('Asia/Shanghai').strftime('%Y-%m-%d %H:%M:%S')
+    dt = arrow.get(timestamp / 1000).to('Asia/Shanghai').datetime
+    return (babel.dates.format_date(dt, format='full', locale='zh_CN') + ' ' +
+            dt.strftime('%H:%M'))
 
 @app.route('/')
 def index():
