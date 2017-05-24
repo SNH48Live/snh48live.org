@@ -149,14 +149,17 @@ def str2date(datestr):
     return arrow.get(datestr, 'YYYY-MM-DD', tzinfo='America/Los_Angeles').datetime
 
 def make_data_plots(data):
+    data = data.copy()
     # If there are fewer than 61 data points, insert zeros
     if len(data) < 61:
-        data = data.copy()
         date = str2date(data[0][0])
         one_day = datetime.timedelta(days=1)
         while len(data) < 61:
             date -= one_day
             data.insert(0, (date2str(date), 0, 0, 0, 0))
+    # If there are more than 61 data points, drop the earlier ones
+    elif len(data) > 61:
+        data = data[-61:]
 
     # Plot totals
     dates, subscribers_gained, subscribers_lost, views, estimated_minutes_watched = tuple(zip(*data))
