@@ -27,6 +27,7 @@ The response of a successful request contains pagination info and a list of meta
 | Key | Description |
 | --- | ----------- |
 | `id` | A numerial internal ID; should be stable, but do not rely on that. |
+| `live_id` | ID of the performance on live.snh48.com. The VOD should be located at `http://live.snh48.com/Index/invedio/id/{live_id}`. |
 | `performers` | A comma-delimited list of performer names for the specific performance. The string ends in a comma. |
 | `snh48club_video_id` | ID of the performance on snh48club.com. The performance should be located at `http://www.snh48club.com/video/{snh48club_video_id}.html`, from which the list of performers was compiled. |
 | `special` | Boolean indicating whether the performance was a special stage. Somewhat opinionated. |
@@ -41,40 +42,43 @@ The response of a successful request contains pagination info and a list of meta
 GET https://snh48live.org/filter/api/performance?member=莫寒&results_per_page=3
 
 {
-  "num_results": 46,
+  "num_results": 49,
   "objects": [
     {
-      "id": 146,
-      "performers": "陈观慧,陈思,蒋芸,吕一,李宇琪,莫寒,潘燕琦,钱蓓婷,孙芮,沈之琳,吴哲晗,徐晨辰,徐子轩,袁雨桢,赵韩倩,赵晔,",
-      "snh48club_video_id": "19258",
+      "id": 183,
+      "live_id": "213",
+      "performers": "陈思,戴萌,蒋芸,孔肖吟,李宇琪,吕一,莫寒,潘燕琦,钱蓓婷,孙芮,吴哲晗,徐晨辰,徐子轩,许佳琪,袁丹妮,袁雨桢,赵韩倩,冯晓菲,",
+      "snh48club_video_id": "20580",
       "special": false,
       "stage": "心的旅程",
       "team": "s2",
-      "title": "20170420 SNH48 Team SⅡ 心的旅程 53",
-      "video_id": "ygm4WaeO6cQ"
+      "title": "20170527 SNH48 Team SⅡ 心的旅程 59",
+      "video_id": "Ujcn-zxRuUE"
     },
     {
-      "id": 143,
-      "performers": "陈观慧,成珏,戴萌,蒋芸,孔肖吟,吕一,莫寒,钱蓓婷,孙芮,沈之琳,徐晨辰,许佳琪,徐子轩,袁丹妮,袁雨桢,赵韩倩,冯晓菲,",
-      "snh48club_video_id": "19116",
+      "id": 181,
+      "live_id": null,
+      "performers": "陈思,戴萌,蒋芸,吕一,莫寒,潘燕琦,钱蓓婷,孙芮,吴哲晗,徐晨辰,徐子轩,许佳琪,袁丹妮,袁雨桢,赵韩倩,冯晓菲,",
+      "snh48club_video_id": "20578",
       "special": false,
       "stage": "心的旅程",
       "team": "s2",
-      "title": "20170416 SNH48 Team SⅡ 心的旅程 52 戴萌生日主题公演",
-      "video_id": "jd74BATSAOo"
+      "title": "20170525 SNH48 Team SⅡ 心的旅程 58",
+      "video_id": "QEpMyr-NQhk"
     },
     {
-      "id": 141,
-      "performers": "成珏,戴萌,蒋芸,孔肖吟,吕一,莫寒,钱蓓婷,孙芮,沈之琳,徐晨辰,许佳琪,徐子轩,袁丹妮,袁雨桢,赵韩倩,冯晓菲,",
-      "snh48club_video_id": "19058",
+      "id": 179,
+      "live_id": "210",
+      "performers": "陈观慧,陈思,戴萌,蒋芸,孔肖吟,吕一,莫寒,潘燕琦,钱蓓婷,孙芮,吴哲晗,徐晨辰,许佳琪,徐子轩,袁丹妮,赵韩倩,冯晓菲,",
+      "snh48club_video_id": "20468",
       "special": false,
       "stage": "心的旅程",
       "team": "s2",
-      "title": "20170415 SNH48 Team SⅡ 心的旅程 51",
-      "video_id": "SOcOjHCQaAw"
+      "title": "20170521 SNH48 Team SⅡ 心的旅程 57 孔肖吟生日主题公演",
+      "video_id": "G6M_hiOCV-4"
     }
   ],
   "page": 1,
-  "total_pages": 16
+  "total_pages": 17
 }
 ```
