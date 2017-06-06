@@ -78,6 +78,7 @@ class Performance(db.Model):
     special = db.Column(db.Boolean)
     video_id = db.Column(db.Unicode, unique=True, nullable=True)
     performers = db.Column(db.Unicode)
+    live_id = db.Column(db.Unicode, unique=True, nullable=True)
     snh48club_video_id = db.Column(db.Unicode, unique=True, nullable=True)
 
 db.create_all()
