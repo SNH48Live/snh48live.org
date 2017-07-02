@@ -115,30 +115,39 @@ def update():
     entries = []
     download_tasks = []
     for entry in raw_entries:
+        live_id = entry.liveId
         title = entry.title.strip()
         subtitle = entry.subTitle.strip()
         timestamp = entry.startTime
+        datetime = arrow.get(timestamp / 1000).to('Asia/Shanghai')
         group_id = entry.groupId
         if group_id == 10:
             platform = 'live.snh48.com'
+            stream_path_suffix = '9999'
         elif group_id == 11:
             platform = 'live.bej48.com'
+            stream_path_suffix = '2001'
         elif group_id == 12:
             platform = 'live.gnz48.com'
+            stream_path_suffix = '3001'
         elif group_id == 13:
             platform = 'live.shy48.com'
+            stream_path_suffix = '6001'
         else:
             raise NotImplementedError('unrecgonized groupId %s: %s' % (group_id, entry))
-        thumbnail_url = 'https://source1.48.cn%s' % entry.picPath
-        image_filename = '%s-%s.jpg' % (
-            arrow.get(timestamp / 1000).to('Asia/Shanghai').strftime('%Y%m%d%H%M%S'),
-            md5sum(thumbnail_url),
+        steam_path = 'http://ts.snh48.com/vod/z1.chaoqing.%s/%s/%s.mp4/playlist.m3u8' % (
+            stream_path_suffix, datetime.strftime('%Y%m%d'), live_id,
         )
+        thumbnail_url = 'https://source1.48.cn%s' % entry.picPath
+        image_filename = '%s-%s.jpg' % (datetime.strftime('%Y%m%d%H%M%S'), live_id)
         entries.append({
+            'live_id': live_id,
             'title': title,
             'subtitle': subtitle,
             'timestamp': timestamp,
+            'datetime': datetime.isoformat(),
             'platform': platform,
+            'stream_path': steam_path,
             'thumbnail_url': thumbnail_url,
             'local_filename': image_filename,
         })
