@@ -11,6 +11,7 @@ HERE = os.path.dirname(os.path.realpath(__file__))
 DATADIR = os.path.join(HERE, 'data')
 os.makedirs(DATADIR, exist_ok=True)
 DATAFILE = os.path.join(DATADIR, 'data.json')
+ARCHIVE = os.path.join(DATADIR, 'archive.db')
 
 IMAGEDIR = os.path.join(DATADIR, 'images')
 os.makedirs(IMAGEDIR, exist_ok=True)

@@ -11,12 +11,28 @@ import time
 
 import arrow
 import attrdict
+import peewee
 import requests
 
-from common import DATAFILE, IMAGEDIR, install_rotating_file_handler, safe_open
+from common import DATAFILE, ARCHIVE, IMAGEDIR, install_rotating_file_handler, safe_open
 
 logger = logging.getLogger('snh48live-schedule')
 install_rotating_file_handler(logger, 'updater.log')
+archive = peewee.SqliteDatabase(ARCHIVE)
+
+class Entry(peewee.Model):
+    live_id = peewee.TextField(unique=True)
+    title = peewee.TextField()
+    subtitle = peewee.TextField()
+    timestamp = peewee.IntegerField()
+    datetime = peewee.TextField()
+    platform = peewee.TextField()
+    stream_path = peewee.TextField()
+    thumbnail_url = peewee.TextField()
+    local_filename = peewee.TextField()
+
+    class Meta:
+        database = archive
 
 def download(url, path):
     resp = requests.get(url, stream=True)
@@ -156,7 +172,11 @@ def update():
             pool.close()
             pool.join()
 
+    # Insert entries into archival database
+    peewee.InsertQuery(Entry, rows=entries).upsert().execute()
+
 def main():
+    archive.create_tables([Entry], safe=True)
     update()
 
 if __name__ == '__main__':
