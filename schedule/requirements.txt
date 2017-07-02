@@ -2,6 +2,4 @@ Flask
 arrow
 attrdict
 babel
-daemonize
 requests
-setproctitle

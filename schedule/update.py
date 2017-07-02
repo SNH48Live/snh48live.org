@@ -15,13 +15,6 @@ import requests
 
 from common import DATAFILE, IMAGEDIR, install_rotating_file_handler, safe_open
 
-UPDATE_INTERVAL = 1800
-
-XDG_RUNTIME_DIR = os.getenv('XDG_RUNTIME_DIR')
-RUNTIME_DIR = os.path.join(XDG_RUNTIME_DIR if XDG_RUNTIME_DIR else '/tmp', 'snh48live-schedule')
-os.makedirs(RUNTIME_DIR, exist_ok=True)
-PIDFILE = os.path.join(RUNTIME_DIR, 'updater.pid')
-
 logger = logging.getLogger('snh48live-schedule')
 install_rotating_file_handler(logger, 'updater.log')
 
@@ -168,40 +161,8 @@ def update():
             pool.close()
             pool.join()
 
-def periodic_updater():
-    import setproctitle
-    try:
-        setproctitle.setproctitle('snh48live-schedule')
-        while True:
-            try:
-                update()
-            except Exception as e:
-                logger.error('update failed: %s: %s', type(e).__name__, e)
-            time.sleep(UPDATE_INTERVAL - time.time() % UPDATE_INTERVAL)
-    except KeyboardInterrupt:
-        pass
-
-def start_daemon():
-    import daemonize
-    daemon = daemonize.Daemonize(
-        app='snh48live-schedule',
-        pid=PIDFILE,
-        action=periodic_updater,
-        keep_fds=[handler.stream.fileno() for handler in logger.handlers],
-        logger=logger,
-    )
-    daemon.start()
-
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--daemon', action='store_true',
-                        help='run in daemon mode (beware of RAM consumption)')
-    args = parser.parse_args()
-
-    if args.daemon:
-        start_daemon()
-    else:
-        update()
+    update()
 
 if __name__ == '__main__':
     main()
