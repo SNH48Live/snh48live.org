@@ -18,11 +18,6 @@ from common import DATAFILE, IMAGEDIR, install_rotating_file_handler, safe_open
 logger = logging.getLogger('snh48live-schedule')
 install_rotating_file_handler(logger, 'updater.log')
 
-def md5sum(s):
-    m = hashlib.md5()
-    m.update(s.encode('utf-8'))
-    return m.hexdigest()
-
 def download(url, path):
     resp = requests.get(url, stream=True)
     if resp.status_code != 200:
