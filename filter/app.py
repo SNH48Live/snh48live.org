@@ -15,7 +15,8 @@ app = flask.Flask(__name__)
 
 CACHE_TIMEOUT=60
 try:
-    cache = werkzeug.contrib.cache.MemcachedCache(['127.0.0.1:11211'], default_timeout=CACHE_TIMEOUT)
+    cache = werkzeug.contrib.cache.MemcachedCache(['127.0.0.1:11211'], default_timeout=CACHE_TIMEOUT,
+                                                  key_prefix='snh48live-filter')
     cache.get('test')  # Test connection
 except Exception:
     cache = werkzeug.contrib.cache.SimpleCache(default_timeout=CACHE_TIMEOUT)
