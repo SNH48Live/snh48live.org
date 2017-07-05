@@ -194,8 +194,12 @@ def performance(slug):
 
 DATAURL = 'https://raw.githubusercontent.com/SNH48Live/SNH48Live/master/performances.json'
 
-@app.route('/webhook/update', methods=['POST'])
-def update_hook():
+def reset():
+    db.session.query(Performance).delete()
+    db.session.commit()
+    cache.clear()
+
+def update():
     resp = requests.get(DATAURL, stream=True)
     if resp.status_code != 200:
         message = 'GET %s: HTTP %d' % (DATAURL, resp.status_code)
@@ -215,6 +219,18 @@ def update_hook():
     # Note that records appearing earlier in the stream should be inserted later
     db.session.bulk_save_objects(reversed(performances))
     db.session.commit()
+    cache.clear()
+    return new_records
+
+@app.route('/webhook/update', methods=['POST'])
+def update_hook():
+    new_records = update()
+    return flask.jsonify(dict(message='Success', new_records=new_records)), 200
+
+@app.route('/webhook/reset', methods=['POST'])
+def reset_hook():
+    reset()
+    new_records = update()
     return flask.jsonify(dict(message='Success', new_records=new_records)), 200
 
 if __name__ == '__main__':
