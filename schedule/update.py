@@ -159,9 +159,13 @@ def update():
         if not os.path.isfile(image_path):
             download_tasks.append((thumbnail_url, image_path))
 
-    # Write database
-    with safe_open(DATAFILE, 'w') as fp:
-        json.dump(entries, fp)
+    # Write database.
+    #
+    # Do not write if DATAFILE already exists and entries are empty,
+    # indicating an API problem.
+    if not os.path.exists(DATAFILE) or entries:
+        with safe_open(DATAFILE, 'w') as fp:
+            json.dump(entries, fp)
 
     # Download images if necessary
     if download_tasks:
