@@ -114,7 +114,7 @@ def optimize_svg(path):
 
 # datapoints should be a list of 60 data points.
 # title should be capatalized and will be converted to lower case for the ylabel.
-def make_plot(datapoints, title, start_date, end_date, filename=None):
+def make_plot(datapoints, title, start_date, end_date, *, filename=None, ylim0=False):
     offsets = range(1, 61)
     plt.figure(figsize=(15, 10))
     plt.title('%s (%s to %s)' % (title, start_date, end_date))
@@ -131,6 +131,9 @@ def make_plot(datapoints, title, start_date, end_date, filename=None):
         # Put the actual number on the every 5th point
         if x % 5 == 0:
             plt.text(x, y, str(y), horizontalalignment='center', verticalalignment='bottom')
+
+    if ylim0:
+        plt.gca().set_ylim(bottom=0)
 
     if filename is None:
         filename = '%s.svg' % title.lower().replace(' ', '-')
@@ -174,9 +177,9 @@ def make_data_plots(data):
     daily_subscribers = [subscribers[i + 1] - subscribers[i] for i in range(60)]
     daily_views = [views[i + 1] - views[i] for i in range(60)]
     daily_estimated_minutes_watched = [estimated_minutes_watched[i + 1] - estimated_minutes_watched[i] for i in range(60)]
-    make_plot(daily_subscribers, 'Daily subscribers', start_date, end_date)
-    make_plot(daily_views, 'Daily views', start_date, end_date)
-    make_plot(daily_estimated_minutes_watched, 'Daily estimated minutes watched', start_date, end_date)
+    make_plot(daily_subscribers, 'Daily subscribers', start_date, end_date, ylim0=True)
+    make_plot(daily_views, 'Daily views', start_date, end_date, ylim0=True)
+    make_plot(daily_estimated_minutes_watched, 'Daily estimated minutes watched', start_date, end_date, ylim0=True)
 
 def write_data_csv(data):
     with utils.atomic_writer(os.path.join(DATADIR, 'data.csv')) as fp:
