@@ -238,6 +238,13 @@ def update(youtube_analytics):
     for record in Date.select().order_by(Date.date):
         data.append((record.date, record.subscribers_gained, record.subscribers_lost,
                      record.views, record.estimated_minutes_watched))
+
+    # Drop the last row if it's the same as the second-to-last (except
+    # the date of course), which probably means the data for that day
+    # isn't available yet.
+    if len(data) >= 2 and data[-1][1:] == data[-2][1:]:
+        data = data[:-1]
+
     make_data_plots(data)
     write_data_csv(data)
 
