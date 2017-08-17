@@ -72,6 +72,7 @@ def favicon():
 
 @app.route('/proxy/<path:url>')
 def proxy(url):
+    import hashlib
     import re
     import requests
     import pylibmc
@@ -87,12 +88,12 @@ def proxy(url):
         return 'URL not supported.\n', 400
     url = 'http://%s' % m.group(1)
 
-    cache_key = 'proxy:%s' % url
+    cache_key = 'proxy-%s' % hashlib.md5(url.encode('utf-8')).hexdigest()
     try:
         origin_response = cache.get(cache_key)
     except pylibmc.Error:
         origin_response = None
-    if not origin_response:
+    if origin_response is None:
         try:
             origin_response = requests.head(url)
         except (requests.exceptions.RequestException, OSError):
