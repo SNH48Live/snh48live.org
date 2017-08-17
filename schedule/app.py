@@ -49,6 +49,28 @@ def favicon():
         mimetype='image/x-icon',
     )
 
+@app.route('/proxy/<path:url>')
+def proxy(url):
+    import re
+    import requests
+
+    # Only proxy HEAD requests
+    if flask.request.method != 'HEAD':
+        return '', 405
+
+    # Accept https://, https:/ (single slash, since Apache collapses
+    # multiple slashes in the path), or no scheme at all.
+    m = re.match(r'^(?:https?://?)?(ts\.snh48\.com/.*)$', url)
+    if not m:
+        return 'URL not supported.\n', 400
+    url = 'http://%s' % m.group(1)
+
+    origin_response = requests.head(url)
+    response = flask.make_response('', origin_response.status_code)
+    for key, val in origin_response.headers.items():
+        response.headers[key] = val
+    return response
+
 @app.errorhandler(404)
 def not_found(e):
     return flask.render_template('404.html'), 404
