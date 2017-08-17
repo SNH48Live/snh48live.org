@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width,initial-scale=1" name="viewport">
+  <title>SNH48官方录播状态</title>
+  <link rel="apple-touch-icon-precomposed" href="/favicon-152.png">
+  <style>
+    html { height: 100%; }
+    body { display: flex; flex-direction: column; height: 100%; margin: 0; font-family: "Times New Roman", Times, "Songti SC", SimSun, serif; font-size: 16px; text-size-adjust: none; -webkit-text-size-adjust: none; }
+    main { flex: 1 0 auto; width: 500px; margin: 0 auto; }
+    h1 { text-align: center; font-size: 150%; margin:1em 0 .5em 0; }
+    .leftshift { margin-left: -0.5em; }
+    .subtitle:before { content: " · "; }
+    .datetime { display: block; }
+    .info, .resources { margin: 0.5em 0; }
+    .resource { margin-left: 1em; }
+    .refresh:hover { cursor: pointer; }
+    .refresh:before { content: ""; display: inline-block; height: 18px; width: 18px; position: relative; top: -1px; background: url("{{ 'refresh.svg'|static }}") center/12px 12px no-repeat; vertical-align: middle; }
+    .loading .refresh:before { background-image: url("{{ 'loading.svg'|static }}"); }
+    .refresh.done:before { background-image: url("{{ 'check.svg'|static }}"); }
+    .refresh.done:hover { cursor: auto; }
+    .link { display: inline-block; width: 3em; }
+    .status { color: red; }
+    .loading .status { visibility: hidden; }
+    .status.ok { color: green; }
+    @media (max-width: 555px) { main { width: 90%; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>SNH48官方录播状态</h1>
+    {%- for entry in entries %}
+    <div class="entry">
+      <div class="info">
+        <span class="title{% if entry.title.startswith('《') %} leftshift{% endif %}">{{ entry.title }}</span>
+        <span class="subtitle{% if entry.subtitle.startswith('《') %} leftshift{% endif %}">{{ entry.subtitle }}</span>
+        <span class="datetime">{{ entry.timestamp|strftime }}</span>
+      </div>
+      <div class="resources">
+        {%- if entry.stream_path|hasstandalonemp4 %}
+        <div class="resource">
+          <span class="refresh"></span>
+          <a class="link" href="{{ entry.stream_path|standalonemp4url }}" target="_blank">MP4</a>
+          <span class="status"></span>
+        </div>
+        {%- endif %}
+        <div class="resource">
+          <span class="refresh"></span>
+          <a class="link" href="{{ entry.stream_path }}" target="_blank">M3U8</a>
+          <span class="status"></span>
+        </div>
+      </div>
+    </div>
+    {% if not loop.last %}<hr>{% endif %}
+    {%- endfor %}
+  </main>
+  <script>
+document.addEventListener('DOMContentLoaded', function() {
+  function fetchStatus(refreshButton) {
+    var resourceEntry = refreshButton.parentNode;
+    var link = refreshButton.nextElementSibling
+    var statusIndicator = link.nextElementSibling
+    var url = '../proxy/' + link.href
+    resourceEntry.classList.add('loading')
+    fetch(url, { method: 'HEAD' }).then(function (response) {
+      var status = response.status;
+      if (status === 200) {
+        var contentLength = parseInt(response.headers.get('Content-Length'))
+        statusIndicator.classList.add('ok')
+        statusIndicator.textContent = `${status} (${contentLength.toLocaleString('en-US')} bytes)`
+        refreshButton.classList.add('done')
+        refreshButton.onclick = null
+      } else {
+        statusIndicator.classList.remove('ok')
+        statusIndicator.textContent = `${status}`
+      }
+      resourceEntry.classList.remove('loading')
+    })
+  }
+
+  for (var refreshButton of Array.from(document.getElementsByClassName('refresh'))) {
+    fetchStatus(refreshButton)
+    refreshButton.onclick = function () { fetchStatus(this) }
+  }
+})
+  </script>
+</body>
+</html>
+
+{#- Local Variables: #}
+{#- mode: jinja2 #}
+{#- End: #}

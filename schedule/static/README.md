@@ -1,0 +1,2 @@
+- `loading.svg` courtesy of [loading.io](https://loading.io/) (CC0 licensed);
+- `check.svg` and `refresh.svg` courtesy of Font Awesome (MIT licensed).

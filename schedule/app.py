@@ -11,16 +11,37 @@ import arrow
 import attrdict
 import babel.dates
 import flask
+import werkzeug.contrib.cache
 
 from common import DATAFILE, IMAGEDIR, install_rotating_file_handler, safe_open
 
 app = flask.Flask(__name__)
+
+CACHE_TIMEOUT=15
+try:
+    cache = werkzeug.contrib.cache.MemcachedCache(['127.0.0.1:11211'], default_timeout=CACHE_TIMEOUT,
+                                                  key_prefix='snh48live-schedule')
+    cache.get('test')  # Test connection
+except Exception:
+    cache = werkzeug.contrib.cache.SimpleCache(default_timeout=CACHE_TIMEOUT)
+
+@app.template_filter('static')
+def static(file):
+    return flask.url_for('static', filename=file)
 
 @app.template_filter('strftime')
 def strftime(timestamp):
     dt = arrow.get(timestamp / 1000).to('Asia/Shanghai').datetime
     return (babel.dates.format_date(dt, format='full', locale='zh_CN') + ' ' +
             dt.strftime('%H:%M'))
+
+@app.template_filter('hasstandalonemp4')
+def hasstandalonemp4(m3u8_url):
+    return m3u8_url.endswith('/playlist.m3u8')
+
+@app.template_filter('standalonemp4url')
+def standalonemp4url(m3u8_url):
+    return m3u8_url[:-14]
 
 @app.route('/')
 def index():
@@ -53,6 +74,7 @@ def favicon():
 def proxy(url):
     import re
     import requests
+    import pylibmc
 
     # Only proxy HEAD requests
     if flask.request.method != 'HEAD':
@@ -65,11 +87,38 @@ def proxy(url):
         return 'URL not supported.\n', 400
     url = 'http://%s' % m.group(1)
 
-    origin_response = requests.head(url)
+    cache_key = 'proxy:%s' % url
+    try:
+        origin_response = cache.get(cache_key)
+    except pylibmc.Error:
+        origin_response = None
+    if not origin_response:
+        try:
+            origin_response = requests.head(url)
+        except (requests.exceptions.RequestException, OSError):
+            return 'HEAD %s failed\n' % url, 500
+        # cache 200 responses indefinitely; otherwise, use default timeout.
+        timeout = 0 if origin_response.status_code == 200 else None
+        try:
+            # Do not cache 5xx responses
+            if origin_response.status_code < 500:
+                cache.set(cache_key, origin_response, timeout=timeout)
+        except pylibmc.Error:
+            pass
+
     response = flask.make_response('', origin_response.status_code)
     for key, val in origin_response.headers.items():
         response.headers[key] = val
     return response
+
+@app.route('/vods/')
+def vods():
+    import time
+    from common import Entry
+
+    entries = list(Entry.select().where(Entry.timestamp < time.time() * 1000).
+                   order_by(Entry.timestamp.desc()).limit(5))
+    return flask.render_template('vods.html', entries=entries)
 
 @app.errorhandler(404)
 def not_found(e):
@@ -84,4 +133,5 @@ def init():
 
 if __name__ == '__main__':
     init()
-    app.run(debug=True)
+    app.jinja_env.auto_reload = True
+    app.run(debug=True, threaded=True)

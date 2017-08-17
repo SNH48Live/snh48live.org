@@ -3,4 +3,5 @@ arrow
 attrdict
 babel
 peewee
+pylibmc
 requests

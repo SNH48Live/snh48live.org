@@ -6,6 +6,8 @@ import logging
 import logging.handlers
 import os
 
+import peewee
+
 HERE = os.path.dirname(os.path.realpath(__file__))
 
 DATADIR = os.path.join(HERE, 'data')
@@ -18,6 +20,24 @@ os.makedirs(IMAGEDIR, exist_ok=True)
 
 LOGDIR = os.path.join(HERE, 'logs')
 os.makedirs(LOGDIR, exist_ok=True)
+
+archive = peewee.SqliteDatabase(ARCHIVE)
+
+class Entry(peewee.Model):
+    live_id = peewee.TextField(unique=True)
+    title = peewee.TextField()
+    subtitle = peewee.TextField()
+    timestamp = peewee.IntegerField()
+    datetime = peewee.TextField()
+    platform = peewee.TextField()
+    stream_path = peewee.TextField()
+    thumbnail_url = peewee.TextField()
+    local_filename = peewee.TextField()
+
+    class Meta:
+        database = archive
+
+archive.create_tables([Entry], safe=True)
 
 def install_rotating_file_handler(logger, filename, level=logging.INFO, formatter=None,
                                   maxBytes=1048576, backupCount=5):
