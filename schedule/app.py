@@ -11,19 +11,10 @@ import arrow
 import attrdict
 import babel.dates
 import flask
-import werkzeug.contrib.cache
 
 from common import DATAFILE, IMAGEDIR, install_rotating_file_handler, safe_open
 
 app = flask.Flask(__name__)
-
-CACHE_TIMEOUT=15
-try:
-    cache = werkzeug.contrib.cache.MemcachedCache(['127.0.0.1:11211'], default_timeout=CACHE_TIMEOUT,
-                                                  key_prefix='snh48live-schedule')
-    cache.get('test')  # Test connection
-except Exception:
-    cache = werkzeug.contrib.cache.SimpleCache(default_timeout=CACHE_TIMEOUT)
 
 @app.template_filter('static')
 def static(file):
@@ -72,10 +63,8 @@ def favicon():
 
 @app.route('/proxy/<path:url>')
 def proxy(url):
-    import hashlib
     import re
     import requests
-    import pylibmc
 
     # Only proxy HEAD requests
     if flask.request.method != 'HEAD':
@@ -88,24 +77,10 @@ def proxy(url):
         return 'URL not supported.\n', 400
     url = 'http://%s' % m.group(1)
 
-    cache_key = 'proxy-%s' % hashlib.md5(url.encode('utf-8')).hexdigest()
     try:
-        origin_response = cache.get(cache_key)
-    except pylibmc.Error:
-        origin_response = None
-    if origin_response is None:
-        try:
-            origin_response = requests.head(url)
-        except (requests.exceptions.RequestException, OSError):
-            return 'HEAD %s failed\n' % url, 500
-        # cache 200 responses indefinitely; otherwise, use default timeout.
-        timeout = 0 if origin_response.status_code == 200 else None
-        try:
-            # Do not cache 5xx responses
-            if origin_response.status_code < 500:
-                cache.set(cache_key, origin_response, timeout=timeout)
-        except pylibmc.Error:
-            pass
+        origin_response = requests.head(url)
+    except (requests.exceptions.RequestException, OSError):
+        return 'HEAD %s failed\n' % url, 500
 
     response = flask.make_response('', origin_response.status_code)
     for key, val in origin_response.headers.items():
