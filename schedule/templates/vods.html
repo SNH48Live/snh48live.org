@@ -24,6 +24,7 @@
     .status { color: red; }
     .loading .status { visibility: hidden; }
     .status.ok { color: green; }
+    #last-refreshed { font-size: 80%; }
     @media (max-width: 555px) { main { width: 90%; } }
   </style>
 </head>
@@ -52,8 +53,9 @@
         </div>
       </div>
     </div>
-    {% if not loop.last %}<hr>{% endif %}
+    <hr>
     {%- endfor %}
+    <div id="last-refreshed" style="display:none"></div>
   </main>
   <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -83,6 +85,17 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchStatus(refreshButton)
     refreshButton.onclick = function () { fetchStatus(this) }
   }
+
+  window.setInterval(function () {
+    var lastRefreshedDisplay = document.getElementById('last-refreshed')
+    lastRefreshedDisplay.textContent = `上次自动刷新：${new Date().toLocaleTimeString()}`
+    lastRefreshedDisplay.style.display = 'initial'
+    for (var refreshButton of Array.from(document.getElementsByClassName('refresh'))) {
+      if (!refreshButton.classList.contains('done')) {
+        refreshButton.click()
+      }
+    }
+  }, 60000)
 })
   </script>
 </body>
