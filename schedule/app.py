@@ -87,6 +87,10 @@ def proxy(url):
         response.headers[key] = val
     return response
 
+@app.route('/json/')
+def structured():
+    return flask.send_file(DATAFILE, mimetype='application/json')
+
 @app.route('/vods/')
 def vods():
     import time
