@@ -192,7 +192,7 @@ def performance(slug):
 
 # Update webhook
 
-DATAURL = 'https://raw.githubusercontent.com/SNH48Live/SNH48Live/master/performances.json'
+DATAURL = 'https://raw.githubusercontent.com/SNH48Live/SNH48Live/master/data/performances.json'
 
 def reset():
     db.session.query(Performance).delete()
@@ -220,18 +220,16 @@ def update():
     db.session.bulk_save_objects(reversed(performances))
     db.session.commit()
     cache.clear()
-    return new_records
+    return flask.jsonify(dict(message='Success', new_records=new_records)), 200
 
 @app.route('/webhook/update', methods=['POST'])
 def update_hook():
-    new_records = update()
-    return flask.jsonify(dict(message='Success', new_records=new_records)), 200
+    return update()
 
 @app.route('/webhook/reset', methods=['POST'])
 def reset_hook():
     reset()
-    new_records = update()
-    return flask.jsonify(dict(message='Success', new_records=new_records)), 200
+    return update()
 
 if __name__ == '__main__':
     app.run(debug=True)
