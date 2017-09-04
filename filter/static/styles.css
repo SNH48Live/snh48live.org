@@ -118,6 +118,13 @@ article {
     text-align: justify;
 }
 
+noscript {
+    display: block;
+    margin: 1em auto;
+    text-align: center;
+    color: red;
+}
+
 @media (max-width: 799px) {
     main {
         width: 100vw;
