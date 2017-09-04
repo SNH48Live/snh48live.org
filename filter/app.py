@@ -149,9 +149,33 @@ manager.create_api(
 
 # Site
 
+TEAM_DISPLAY_NAMES = {
+    's2': 'SⅡ',
+    'n2': 'NⅡ',
+    'h2': 'HⅡ',
+    'x': 'X',
+    'x2': 'XⅡ',
+}
+
+STAGE_DISPLAY_NAMES = {
+    'special': '特别公演',
+}
+
 @app.route('/')
 def index():
-    return flask.render_template('index.html')
+    query_params = flask.request.args
+    team = query_params.get('team')
+    stage = query_params.get('stage')
+    member = query_params.get('member')
+    constraints = list(filter(bool, (
+        TEAM_DISPLAY_NAMES.get(team),
+        STAGE_DISPLAY_NAMES.get(stage, stage),
+        member,
+    )))
+    title = 'SNH48公演检索'
+    if constraints:
+        title += '（%s）' % ('，'.join(constraints))
+    return flask.render_template('index.html', title=title)
 
 @app.route('/about')
 def about():
