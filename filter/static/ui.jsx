@@ -195,7 +195,7 @@
   const getCurrentFilters = () => {
     const queryParams = URI(window.location).query(true);
     var filters = {};
-    for (const key of ['team', 'stage', 'member']) {
+    for (const key of ['year', 'team', 'stage', 'member']) {
       const vals = queryParams[key];
       if (vals === undefined) {
         filters[key] = '';
@@ -235,7 +235,7 @@
     },
 
     handleSubmit (event) {
-      const qs = ['team', 'stage', 'member']
+      const qs = ['year', 'team', 'stage', 'member']
             .filter((key) => this.state[key] !== '')
             .map((key) => `${key}=${encodeURIComponent(this.state[key])}`)
             .join('&');
@@ -244,6 +244,17 @@
     },
 
     render: function () {
+      const thisYear = new Date().getFullYear();
+      const yearOptions = [
+        <option value='' key=''>无限制</option>
+      ];
+      for (var year = 2016; year <= thisYear; year++) {
+        yearOptions.push(
+          <option value={year}>{year}</option>
+        );
+      }
+      const selectedYear = this.state.year;
+
       const teamOptions = [
         <option value='' key=''>无限制</option>
       ].concat(
@@ -277,6 +288,12 @@
 
       return (
         <form onSubmit={this.handleSubmit}>
+          <span className='filter'>
+            <label>年份</label>
+            <select name='year' value={this.state.year} onChange={this.handleChange}>
+              {yearOptions}
+            </select>
+          </span>
           <span className='filter'>
             <label>队伍</label>
             <select name='team' value={this.state.team} onChange={this.handleChange}>
@@ -372,7 +389,7 @@
         page: this.state.page,
         results_per_page: this.resultsPerPage
       };
-      for (const key of ['team', 'stage', 'member']) {
+      for (const key of ['year', 'team', 'stage', 'member']) {
         if (this.filters[key] !== '') {
           queryParams[key] = this.filters[key];
         }
