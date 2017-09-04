@@ -12,6 +12,7 @@ GET https://snh48live.org/filter/api/performance
 
 | Parameter | Required | Description |
 | --------- | -------- | ----------- |
+| `year`    | No       | Filtering criterion. A four-digit number. |
 | `team`    | No       | Filtering criterion. Team identifier: `s2`, `n2`, `h2`, `x`, `x2`, `7senses` or `joint` (for joint stages). |
 | `stage`   | No       | Filtering criterion. Stage name: `special` (for special stages), `心的旅程`, `专属派对`, `梦想的旗帜`, `代号XⅡ`, `美丽世界`, `我们向前冲`, or the name of any stage newer than the above. |
 | `member`  | No       | Filtering criterion. Member name: e.g. `莫寒`. |

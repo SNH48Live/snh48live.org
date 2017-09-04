@@ -96,6 +96,8 @@ def caching_preprocessor(**kwargs):
 def caching_postprocessor(result, **kwargs):
     cache.set(cache_key(), json.dumps(result))
 
+YEAR_PATTERN = re.compile('^\d{4}$')
+
 def pre_get_many(search_params=None, **kwargs):
     if search_params is None:
         search_params = {}
@@ -106,6 +108,14 @@ def pre_get_many(search_params=None, **kwargs):
     if 'filters' not in search_params:
         search_params['filters'] = []
     query_params = flask.request.args
+
+    if len(query_params.getlist('year')) > 1:
+        raise flask_restless.ProcessingException(description='More than one year specified.')
+    year = query_params.get('year')
+    if year:
+        if not YEAR_PATTERN.match(year):
+            raise flask_restless.ProcessingException(description="Invalid year '{}'.".format(year))
+        search_params['filters'].append(dict(name='title', op='like', val='{}%'.format(year)))
 
     if len(query_params.getlist('team')) > 1:
         raise flask_restless.ProcessingException(description='More than one team specified.')
