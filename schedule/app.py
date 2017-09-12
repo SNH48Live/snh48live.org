@@ -12,7 +12,7 @@ import attrdict
 import babel.dates
 import flask
 
-from common import DATAFILE, IMAGEDIR, install_rotating_file_handler, safe_open
+from common import DATAFILE, Entry, IMAGEDIR, install_rotating_file_handler, safe_open
 
 app = flask.Flask(__name__)
 
@@ -42,7 +42,12 @@ def index():
         except json.JSONDecodeError:
             app.logger.error('failed to parse %s as JSON', DATAFILE)
             flask.abort(500)
-    return flask.render_template('index.html', entries=entries)
+    # Note that timestamps are in milliseconds
+    now = arrow.get().timestamp * 1000
+    eight_days_ago = now - 86400 * 8 * 1000
+    past_entries = [entry for entry in Entry.select().where((Entry.timestamp > eight_days_ago) &
+                                                            (Entry.timestamp < now))]
+    return flask.render_template('index.html', entries=entries, past_entries=reversed(past_entries))
 
 # Alternatively, we can configure the underlying webserver to serve the images directory directly
 @app.route('/images/<filename>')

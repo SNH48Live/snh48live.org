@@ -1,3 +1,19 @@
+{%- macro grid(entries) -%}
+<div class="grid">
+  {%- for entry in entries %}
+  <div class="item">
+    <div class="thumbnail-container">
+      <img class="thumbnail" src="{{ url_for('image', filename=entry.local_filename) }}" alt="{{ entry.title }}" title="{{ entry.title }}">
+      <span class="dev-info" style="display:none">liveId: <a href="{{ entry.stream_path }}" target="_blank">{{ entry.live_id }}</a></span>
+    </div>
+    <span class="title{% if entry.title.startswith('《') %} leftshift{% endif %}" title="{{ entry.title }}">{{ entry.title }}</span>
+    <span class="subtitle{% if entry.subtitle.startswith('《') %} leftshift{% endif %}" title="{{ entry.subtitle }}">{{ entry.subtitle }}</span>
+    <span class="schedule"><time data-timestamp="{{ entry.timestamp }}">{{ entry.timestamp|strftime }}</time>{% if entry.platform != 'live.snh48.com' %} ({{ entry.platform }}){% endif %}</span>
+  </div>
+  {%- endfor %}
+</div>
+{%- endmacro -%}
+
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans-CN">
 <head>
@@ -10,6 +26,7 @@
     body { display: flex; flex-direction: column; height: 100%; margin: 0; font-family: "Times New Roman", Times, "Songti SC", SimSun, serif; font-size: 16px; text-size-adjust: none; -webkit-text-size-adjust: none; }
     a { color: inherit; text-decoration: none; border-bottom: dashed 1px; }
     h1 { text-align: center; font-size: 30px; margin: 30px 0 15px 0; }
+    h2 { text-align: center; font-size: 24px; margin: 0; }
     #timezone-switcher { text-align: center; font-size: 80%; color: #999; user-select: none; }
     .china-standard-time #local-time, .local-time #china-standard-time { display: none; }
     .button { border-bottom: solid 1px; }
@@ -33,19 +50,9 @@
     <div id="china-standard-time"><span>当前显示时区：北京时间</span><br><span class="button hidden">切换至本地时间</span></div>
     <div id="local-time"><span>当前显示时区：本地时间</span><br><span class="button hidden">切换至北京时间</span></div>
   </div>
-  <div class="grid">
-    {%- for entry in entries %}
-    <div class="item">
-      <div class="thumbnail-container">
-        <img class="thumbnail" src="{{ url_for('image', filename=entry.local_filename) }}" alt="{{ entry.title }}" title="{{ entry.title }}">
-        <span class="dev-info" style="display:none">liveId: <a href="{{ entry.stream_path }}" target="_blank">{{ entry.live_id }}</a></span>
-      </div>
-      <span class="title{% if entry.title.startswith('《') %} leftshift{% endif %}" title="{{ entry.title }}">{{ entry.title }}</span>
-      <span class="subtitle{% if entry.subtitle.startswith('《') %} leftshift{% endif %}" title="{{ entry.subtitle }}">{{ entry.subtitle }}</span>
-      <span class="schedule"><time data-timestamp="{{ entry.timestamp }}">{{ entry.timestamp|strftime }}</time>{% if entry.platform != 'live.snh48.com' %} ({{ entry.platform }}){% endif %}</span>
-    </div>
-    {%- endfor %}
-  </div>
+  {{ grid(entries)|indent(2)|safe }}
+  <h2>过去七天</h2>
+  {{ grid(past_entries)|indent(2)|safe }}
   <footer>© 2017 <a href="https://snh48live.org">SNH48 Live</a> · <a href="https://www.youtube.com/SNH48Live" target="_blank">YouTube</a> · 源代码见<a href="https://github.com/SNH48Live/snh48live.org/tree/master/schedule" target="_blank">GitHub</a></footer>
   <script src="{{ url_for('static', filename='moment/latest/moment-with-zh-cn.min.js') }}"></script>
   <script>
