@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import atexit
+import collections
 import json
 import multiprocessing
 import os
@@ -15,6 +16,50 @@ import flask
 from common import DATAFILE, Entry, IMAGEDIR, install_rotating_file_handler, safe_open
 
 app = flask.Flask(__name__)
+
+app.config['JSON_SORT_KEYS'] = False
+
+def load_scheduled_entries():
+    with safe_open(DATAFILE, 'r') as fp:
+        try:
+            return [attrdict.AttrDict(entry) for entry in json.load(fp)] if fp is not None else []
+        except json.JSONDecodeError:
+            app.logger.error('failed to parse %s as JSON', DATAFILE)
+            flask.abort(500)
+
+def load_past_entries(days=8, excluded_live_ids=None):
+    if excluded_live_ids is None:
+        excluded_live_ids = ()
+    # Note that timestamps in the database are in milliseconds
+    now = arrow.get().timestamp * 1000
+    x_days_ago = now - 86400 * days * 1000
+    return [
+        entry for entry in Entry.select().where(
+            (Entry.timestamp > x_days_ago) & (Entry.timestamp < now)
+        ) if entry.live_id not in excluded_live_ids
+    ]
+
+def load_entries():
+    scheduled_entries = load_scheduled_entries()
+    past_entries = load_past_entries(
+        excluded_live_ids=[entry.live_id for entry in scheduled_entries]
+    )
+    return scheduled_entries, past_entries
+
+def serializable_entries(entries):
+    return [
+        collections.OrderedDict([
+            ('datetime', entry.datetime),
+            ('timestamp', entry.timestamp),
+            ('title', entry.title),
+            ('subtitle', entry.subtitle),
+            ('platform', entry.platform),
+            ('live_id', entry.live_id),
+            ('stream_path', entry.stream_path),
+            ('thumbnail_url', entry.thumbnail_url),
+            ('local_thumbnail_url', flask.url_for('image', filename=entry.local_filename)),
+        ]) for entry in entries
+    ]
 
 @app.template_filter('static')
 def static(file):
@@ -36,18 +81,10 @@ def standalonemp4url(m3u8_url):
 
 @app.route('/')
 def index():
-    with safe_open(DATAFILE, 'r') as fp:
-        try:
-            entries = [attrdict.AttrDict(entry) for entry in json.load(fp)] if fp is not None else []
-        except json.JSONDecodeError:
-            app.logger.error('failed to parse %s as JSON', DATAFILE)
-            flask.abort(500)
-    # Note that timestamps are in milliseconds
-    now = arrow.get().timestamp * 1000
-    eight_days_ago = now - 86400 * 8 * 1000
-    past_entries = [entry for entry in Entry.select().where((Entry.timestamp > eight_days_ago) &
-                                                            (Entry.timestamp < now))]
-    return flask.render_template('index.html', entries=entries, past_entries=reversed(past_entries))
+    scheduled_entries, past_entries = load_entries()
+    return flask.render_template('index.html',
+                                 entries=scheduled_entries,
+                                 past_entries=reversed(past_entries))
 
 # Alternatively, we can configure the underlying webserver to serve the images directory directly
 @app.route('/images/<filename>')
@@ -94,7 +131,9 @@ def proxy(url):
 
 @app.route('/json/')
 def structured():
-    return flask.send_file(DATAFILE, mimetype='application/json')
+    scheduled_entries, past_entries = load_entries()
+    return flask.jsonify(scheduled=serializable_entries(scheduled_entries),
+                         past=serializable_entries(past_entries))
 
 @app.route('/vods/')
 def vods():
