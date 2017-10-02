@@ -132,8 +132,10 @@ def proxy(url):
 @app.route('/json/')
 def structured():
     scheduled_entries, past_entries = load_entries()
-    return flask.jsonify(scheduled=serializable_entries(scheduled_entries),
-                         past=serializable_entries(past_entries))
+    return flask.jsonify(collections.OrderedDict([
+        ('scheduled', serializable_entries(scheduled_entries)),
+        ('past', serializable_entries(past_entries)),
+    ]))
 
 @app.route('/vods/')
 def vods():
