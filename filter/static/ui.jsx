@@ -286,13 +286,30 @@
 
       const memberOptions = [
         <option value='' key=''>无限制</option>
-      ].concat(
-        MEMBER_AFFILIATIONS
-          .filter(([member, _]) => memberInTeam(member, selectedTeam))
-          .map(([member, team]) => (
+      ]
+      var optgroup = []
+      var optgroupTeam = null
+      MEMBER_AFFILIATIONS
+        .filter(([member, _]) => memberInTeam(member, selectedTeam))
+        .forEach(([member, team]) => {
+          if (team !== optgroupTeam) {
+            if (optgroup.length > 0) {
+              memberOptions.push(
+                <optgroup label={TEAM_DISPLAY_NAMES[optgroupTeam]}>{optgroup}</optgroup>
+              );
+            }
+            optgroup = [];
+            optgroupTeam = team;
+          }
+          optgroup.push(
             <option value={member} key={member}>{prefixByTeam(member, team)}</option>
-          ))
-      );
+          );
+        });
+      if (optgroup.length > 0) {
+        memberOptions.push(
+          <optgroup label={TEAM_DISPLAY_NAMES[optgroupTeam]}>{optgroup}</optgroup>
+        );
+      }
 
       return (
         <form onSubmit={this.handleSubmit}>
