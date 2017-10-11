@@ -43,13 +43,13 @@
         <div class="resource">
           <span class="refresh"></span>
           <a class="link" href="{{ entry.stream_path|standalonemp4url }}" target="_blank">MP4</a>
-          <span class="status"></span>
+          <span class="status unknown"></span>
         </div>
         {%- endif %}
         <div class="resource">
           <span class="refresh"></span>
           <a class="link" href="{{ entry.stream_path }}" target="_blank">M3U8</a>
-          <span class="status"></span>
+          <span class="status unknown"></span>
         </div>
       </div>
     </div>
@@ -59,7 +59,9 @@
   </main>
   <script>
 document.addEventListener('DOMContentLoaded', function() {
-  function fetchStatus(refreshButton) {
+  Notification.requestPermission()
+
+  function fetchStatus(refreshButton, manual) {
     var resourceEntry = refreshButton.parentNode;
     var link = refreshButton.nextElementSibling
     var statusIndicator = link.nextElementSibling
@@ -73,17 +75,25 @@ document.addEventListener('DOMContentLoaded', function() {
         statusIndicator.textContent = `${status} (${contentLength.toLocaleString('en-US')} bytes)`
         refreshButton.classList.add('done')
         refreshButton.onclick = null
+        {# Notify if this is for an M3U8 link and not the initial status update. -#}
+        if (!manual && link.textContent === 'M3U8' && !statusIndicator.classList.contains('unknown')) {
+          var notification = new Notification('New availability detected', {
+            icon: '{{ 'logo.png'|static }}'
+          })
+          notification.onclick = function () { window.focus() }
+        }
       } else {
         statusIndicator.classList.remove('ok')
         statusIndicator.textContent = `${status}`
       }
       resourceEntry.classList.remove('loading')
+      statusIndicator.classList.remove('unknown')
     })
   }
 
   for (var refreshButton of Array.from(document.getElementsByClassName('refresh'))) {
-    fetchStatus(refreshButton)
-    refreshButton.onclick = function () { fetchStatus(this) }
+    fetchStatus(refreshButton, false)
+    refreshButton.onclick = function () { fetchStatus(this, true) }
   }
 
   window.setInterval(function () {
@@ -92,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
     lastRefreshedDisplay.style.display = 'initial'
     for (var refreshButton of Array.from(document.getElementsByClassName('refresh'))) {
       if (!refreshButton.classList.contains('done')) {
-        refreshButton.click()
+        fetchStatus(refreshButton, false)
       }
     }
   }, 60000)
