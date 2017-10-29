@@ -14,7 +14,7 @@
     .subtitle:before { content: " · "; }
     .datetime { display: block; }
     .info, .resources { margin: 0.5em 0; }
-    .resource { margin-left: 1em; }
+    .resource { margin-left: 1em; white-space: nowrap; }
     .refresh:hover { cursor: pointer; }
     .refresh:before { content: ""; display: inline-block; height: 18px; width: 18px; position: relative; top: -1px; background: url("{{ 'refresh.svg'|static }}") center/12px 12px no-repeat; vertical-align: middle; }
     .loading .refresh:before { background-image: url("{{ 'loading.svg'|static }}"); }
