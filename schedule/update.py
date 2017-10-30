@@ -71,6 +71,8 @@ def download_with_retry(url, path):
 #   "isLike": false,
 #   "groupId": 10
 # }
+#
+# Returns None when the request fails.
 def fetch_group_schedule(group_id):
     url = 'https://plive.48.cn/livesystem/api/live/v1/openLivePage'
     payload = {'groupId': group_id, 'type': 0, 'limit': 20}
@@ -81,23 +83,33 @@ def fetch_group_schedule(group_id):
         resp = requests.post(url, json=payload, timeout=16)
         if resp.status_code != 200:
             logger.error('%s: HTTP %d %s', request_str, resp.status_code, resp.reason)
-            return []
+            return None
     except Exception as e:
         logger.error('%s: %s: %s', request_str, type(e).__name__, e)
-        return []
+        return None
     return list(attrdict.AttrDict(resp.json()).content.liveList)
 
 def update():
     logger.info('updating...')
 
+    api_all_good = True
     # SNH48
-    raw_entries = fetch_group_schedule(10)
+    entries = fetch_group_schedule(10)
+    if entries is None:
+        api_all_good = False
+        raw_entries = []
+    else:
+        raw_entries = entries
     # BEJ48, GNZ48, SHY48
     keywords = re.compile(r'SNH|7SENSES|TEAM ?([SNH]II(?!I)|X(II)?)', re.I)
     for group_id in 11, 12, 13:
         # Sniff out entries that contain SNH and/or 7SENSES
-        raw_entries += [entry for entry in fetch_group_schedule(group_id) if
-                        keywords.match(entry.title) or keywords.match(entry.subTitle)]
+        entries = fetch_group_schedule(group_id)
+        if entries is None:
+            api_all_good = False
+        else:
+            raw_entries += [entry for entry in entries
+                            if keywords.match(entry.title) or keywords.match(entry.subTitle)]
     raw_entries.sort(key=lambda entry: entry.startTime)
 
     # Parse raw entries as returned by the API
@@ -147,8 +159,9 @@ def update():
     # Write database.
     #
     # Do not write if DATAFILE already exists and entries are empty,
-    # indicating an API problem.
-    if not os.path.exists(DATAFILE) or entries:
+    # unless all API requests were successful, indicating a legit empty
+    # schedule.
+    if not os.path.exists(DATAFILE) or entries or api_all_good:
         with safe_open(DATAFILE, 'w') as fp:
             json.dump(entries, fp)
 
@@ -162,7 +175,8 @@ def update():
             pool.join()
 
     # Insert entries into archival database
-    peewee.InsertQuery(Entry, rows=entries).upsert().execute()
+    if entries:
+        peewee.InsertQuery(Entry, rows=entries).upsert().execute()
 
 def main():
     update()
