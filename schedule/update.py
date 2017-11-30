@@ -51,6 +51,7 @@ def download_with_retry(url, path):
 # - BEJ48: 11
 # - GNZ48: 12
 # - SHY48: 13
+# - CKG48: 14
 #
 # Returns a list of entries each of which looks like
 #
@@ -102,7 +103,7 @@ def update():
         raw_entries = entries
     # BEJ48, GNZ48, SHY48
     keywords = re.compile(r'SNH|7SENSES|TEAM ?([SNH]II(?!I)|X(II)?)', re.I)
-    for group_id in 11, 12, 13:
+    for group_id in 11, 12, 13, 14:
         # Sniff out entries that contain SNH and/or 7SENSES
         entries = fetch_group_schedule(group_id)
         if entries is None:
@@ -134,6 +135,9 @@ def update():
         elif group_id == 13:
             platform = 'live.shy48.com'
             stream_path_suffix = '6001'
+        elif group_id == 14:
+            platform = 'live.ckg48.com'
+            stream_path_suffix = '8001'
         else:
             raise NotImplementedError('unrecgonized groupId %s: %s' % (group_id, entry))
         steam_path = 'http://ts.snh48.com/vod/z1.chaoqing.%s/%s/%s.mp4/playlist.m3u8' % (
