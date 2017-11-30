@@ -151,6 +151,7 @@ def update():
             'platform': platform,
             'thumbnail_url': thumbnail_url,
             'local_filename': image_filename,
+            'stream_path': '',
         })
         image_path = os.path.join(IMAGEDIR, image_filename)
         if not os.path.isfile(image_path):
