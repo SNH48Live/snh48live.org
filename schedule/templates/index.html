@@ -4,7 +4,6 @@
   <div class="item">
     <div class="thumbnail-container">
       <img class="thumbnail" src="{{ url_for('image', filename=entry.local_filename) }}" alt="{{ entry.title }}" title="{{ entry.title }}">
-      <span class="dev-info" style="display:none">liveId: <a href="{{ entry.stream_path }}" target="_blank">{{ entry.live_id }}</a></span>
     </div>
     <span class="title{% if entry.title.startswith('《') %} leftshift{% endif %}" title="{{ entry.title }}">{{ entry.title }}</span>
     <span class="subtitle{% if entry.subtitle.startswith('《') %} leftshift{% endif %}" title="{{ entry.subtitle }}">{{ entry.subtitle }}</span>
@@ -81,17 +80,6 @@
         timezoneSwitcher.classList.add('china-standard-time')
         timezoneSwitcher.classList.remove('local-time')
       }
-
-      document.querySelectorAll('.thumbnail-container').forEach(function (container) {
-        container.onclick = function () {
-          for (var i = 0; i < container.childNodes.length; i++) {
-            var node = container.childNodes[i]
-            if (node.className === 'dev-info') {
-              node.style.display = (node.style.display === 'none') ? '' : 'none';
-            }
-          }
-        }
-      })
     })()
   </script>
 </body>

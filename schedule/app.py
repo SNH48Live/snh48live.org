@@ -55,7 +55,6 @@ def serializable_entries(entries):
             ('subtitle', entry.subtitle),
             ('platform', entry.platform),
             ('live_id', entry.live_id),
-            ('stream_path', entry.stream_path),
             ('thumbnail_url', entry.thumbnail_url),
             ('local_thumbnail_url', flask.url_for('image', filename=entry.local_filename)),
         ]) for entry in entries
