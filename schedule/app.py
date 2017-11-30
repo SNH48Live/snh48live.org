@@ -136,14 +136,14 @@ def structured():
         ('past', serializable_entries(past_entries)),
     ]))
 
-@app.route('/vods/')
-def vods():
-    import time
-    from common import Entry
-
-    entries = list(Entry.select().where(Entry.timestamp < time.time() * 1000).
-                   order_by(Entry.timestamp.desc()).limit(5))
-    return flask.render_template('vods.html', entries=entries)
+# @app.route('/vods/')
+# def vods():
+#     import time
+#     from common import Entry
+#
+#     entries = list(Entry.select().where(Entry.timestamp < time.time() * 1000).
+#                    order_by(Entry.timestamp.desc()).limit(5))
+#     return flask.render_template('vods.html', entries=entries)
 
 @app.errorhandler(404)
 def not_found(e):
