@@ -140,9 +140,6 @@ def update():
             stream_path_suffix = '8001'
         else:
             raise NotImplementedError('unrecgonized groupId %s: %s' % (group_id, entry))
-        steam_path = 'http://ts.snh48.com/vod/z1.chaoqing.%s/%s/%s.mp4/playlist.m3u8' % (
-            stream_path_suffix, datetime.strftime('%Y%m%d'), live_id,
-        )
         thumbnail_url = 'https://source1.48.cn%s' % entry.picPath
         image_filename = '%s-%s.jpg' % (datetime.strftime('%Y%m%d%H%M%S'), live_id)
         entries.append({
@@ -152,7 +149,6 @@ def update():
             'timestamp': timestamp,
             'datetime': datetime.isoformat(),
             'platform': platform,
-            'stream_path': steam_path,
             'thumbnail_url': thumbnail_url,
             'local_filename': image_filename,
         })
